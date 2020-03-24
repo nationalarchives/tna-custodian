@@ -1,0 +1,36 @@
+policies:
+  - name: mfa-warn-policy
+    resource: iam-user
+    mode:
+        type: periodic
+        schedule: "rate(1 day)"
+        role: arn:aws:iam::{account_id}:role/CustodianIamMfaWarn
+    filters:
+      - type: credential
+        key: mfa_active
+        value: false
+      - type: credential
+        key: password_enabled
+        value: true
+    actions:
+      - type: notify
+        template: default.html
+        priority_header: '1'
+        subject: "{{ account }} account - user without MFA"
+        violation_desc: "User without MFA"
+        action_desc: "Assign a MFA to this account now!"
+        to:
+          - paul@celidor.net
+        transport:
+          type: sqs
+          queue: https://sqs.eu-west-1.amazonaws.com/{account_id}/custodian-mailer
+      - type: notify
+        slack_template: slack_default
+        violation_desc: 'User without MFA'
+        action_desc: 'Assign a MFA to this account now!'
+        to:
+          - slack://webhook/#mfa-warn
+          - https://hooks.slack.com/services/{slack_webhook}
+        transport:
+          type: sqs
+          queue: https://sqs.eu-west-1.amazonaws.com/{account_id}/custodian-mailer

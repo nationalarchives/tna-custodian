@@ -1,0 +1,20 @@
+# Terraform
+*.tfstate
+*.tfstate.backup
+*.tfstate.lock.info
+*.tfvars
+*.backup
+terraform/.terraform
+
+# External modules
+terraform/tdr-configurations
+
+# Custodian
+logs
+deploy.yml
+
+#IDEs
+.idea
+
+# Mac OS
+.DS_Store
