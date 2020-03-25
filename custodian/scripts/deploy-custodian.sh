@@ -1,15 +1,16 @@
 #!/bin/bash
 #usage: ./deploy-custodian.sh
 
-ACCOUNT_ID=$(aws sts get-caller-identity | jq '.Account' | tr -d '"')
+COST_CENTRE=$(aws ssm get-parameter --name /mgmt/cost_centre | jq '.Parameter.Value' | tr -d '"')
 SLACK_WEBHOOK=$(aws ssm get-parameter --name /mgmt/slack/webhook | jq '.Parameter.Value' | tr -d '"')
 
 echo "Cloud Custodian will now deploy. You have 5 seconds to Ctrl-C"
 sleep 5
 
 echo "Configuring mailer"
-rm -f deploy.yml
-sed "s|{account_id}|${ACCOUNT_ID}|g" ../mailer/mailer.yml > deploy.yml
+
+python build-mailer-yml.py --cost_centre "$COST_CENTRE" --environment mgmt --from_address cloud-custodian@tdr-management.nationalarchives.gov.uk --owner TDR
+
 c7n-mailer -c deploy.yml --update-lambda
 
 echo "Deploying IAM MFA-Warn policy"

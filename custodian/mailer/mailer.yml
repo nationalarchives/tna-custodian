@@ -1,4 +1,0 @@
-queue_url: https://sqs.eu-west-1.amazonaws.com/{account_id}/custodian-mailer
-role: arn:aws:iam::{account_id}:role/CustodianMailer
-from_address: cloud-custodian@tdr-management.nationalarchives.gov.uk
-region: eu-west-1

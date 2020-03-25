@@ -7,6 +7,13 @@
 * Python 3.x
 * AWS CLI
 
+### Create parameters
+* Create parameter /mgmt/cost_centre in SSM parameter store, e.g.```2847``
+* Create parameter /mgmt/slack/webhook in SSM parameter store, e.g.
+```
+HSJGUEH878/XGHDUY8982/MasJ67g2IPv8tjsrg903L
+```
+
 ### Install Cloud Custodian
 * use virtual environment
 ```
