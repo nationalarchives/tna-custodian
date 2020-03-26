@@ -12,7 +12,7 @@ class mailer:
         self.owner = owner
         self.region = region
 
-        path = Path('../mailer/mailer-template.yml')
+        path = Path('../custodian/mailer/mailer-template.yml')
         opath = Path('deploy.yml')
 
         account_id=boto3.client('sts').get_caller_identity().get('Account')
