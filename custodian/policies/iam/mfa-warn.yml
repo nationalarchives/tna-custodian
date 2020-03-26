@@ -5,6 +5,7 @@ policies:
         type: periodic
         schedule: "rate(1 day)"
         role: arn:aws:iam::{account_id}:role/CustodianIamMfaWarn
+        tags: {tags}
     filters:
       - type: credential
         key: mfa_active

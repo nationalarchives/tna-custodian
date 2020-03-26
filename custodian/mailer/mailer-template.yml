@@ -1,0 +1,9 @@
+queue_url: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer
+role: arn:aws:iam::(account_id):role/CustodianMailer
+from_address: {from_address}
+region: {region}
+lambda_tags:
+  CostCentre: {cost_centre}
+  Environment: {environment}
+  Name: {name}
+  Owner: {owner}

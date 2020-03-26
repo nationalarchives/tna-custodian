@@ -5,7 +5,6 @@ import boto3
 
 class mailer:
     def __init__(self, cost_centre, environment, from_address, name, owner, region):
-        #self.account_id = account_id
         self.cost_centre = cost_centre
         self.environment = environment
         self.from_address = from_address
@@ -13,7 +12,7 @@ class mailer:
         self.owner = owner
         self.region = region
 
-        path = Path('mailer-template.yml')
+        path = Path('../mailer/mailer-template.yml')
         opath = Path('deploy.yml')
 
         account_id=boto3.client('sts').get_caller_identity().get('Account')
@@ -24,7 +23,6 @@ class mailer:
             code['role'] = 'arn:aws:iam::' + account_id + ':role/CustodianMailer'
             code['from_address'] = from_address
             code['region'] = region
-            # yaml.indent(sequence=4, offset=2)
             code['lambda_tags'] = dict(CostCentre=cost_centre, Environment=environment, Name=name, Owner=owner)
             yaml.dump(code)
 
@@ -36,7 +34,7 @@ if __name__ == "__main__":
     parser.add_argument('--from_address', required=True)
     parser.add_argument('--name', default='custodian-mailer')
     parser.add_argument('--owner', required=True)
-    parser.add_argument('--region', default='eu-west-1')
+    parser.add_argument('--region', required=True)
 
     args = parser.parse_args()
 
