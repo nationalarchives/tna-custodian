@@ -9,7 +9,7 @@ resource "aws_iam_role" "iam_mfa_warn_assume_role" {
 }
 
 data "template_file" "iam_mfa_warn_policy" {
-  template = file("./modules/iam/templates/custom/mfa-warn/iam_mfa_warn_policy.json.tpl")
+  template = file("./modules/iam/templates/custom/iam-mfa-warn/iam_mfa_warn_policy.json.tpl")
 }
 
 resource "aws_iam_policy" "iam_mfa_warn_policy" {

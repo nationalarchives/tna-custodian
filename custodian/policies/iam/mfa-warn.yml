@@ -21,7 +21,7 @@ policies:
         violation_desc: "User without MFA"
         action_desc: "Assign a MFA to this account now!"
         to:
-          - paul@celidor.net
+          - {to_address}
         transport:
           type: sqs
           queue: https://sqs.eu-west-1.amazonaws.com/{account_id}/custodian-mailer

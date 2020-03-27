@@ -1,14 +1,23 @@
 # tna-custodian
 
+## ALERTS AND REMEDIATIONS
+* This implementation of Cloud Custodian includes the following alerts and automated remediations:
+
+| AWS SERVICE | RULE NAME            | CONDITION                      | REMEDIATION             |
+| ----------- | -------------------- | ------------------------------ | ----------------------- |
+| IAM         | Access-key-warn      | Access keys older than 80 days | None                    |
+| IAM         | MFA-warn             | Console user without MFA       | None                    |
+
 ## USAGE
 
 ### Prerequisites
 * Terraform 12.x
 * Python 3.x
 * AWS CLI
+* Boto3
 
 ### Create parameters
-* Create parameter /mgmt/cost_centre in SSM parameter store, e.g.```2847``
+* Create parameter /mgmt/cost_centre in SSM parameter store, e.g.```2847```
 * Create parameter /mgmt/slack/webhook in SSM parameter store, e.g.
 ```
 HSJGUEH878/XGHDUY8982/MasJ67g2IPv8tjsrg903L
@@ -36,12 +45,34 @@ source custodian/bin/activate
 ```
 cd terraform
 git clone git@github.com:nationalarchives/tdr-configurations.git
-terraform workspace new intg
+terraform workspace new mgmt
 terraform plan
 terraform apply
 ```
-* deploy Cloud Custodian
+* deploy Cloud Custodian, for example to TDR management account
+```
+cd custodian/accounts
+./tdr-mgmt-deploy.sh
+```
+
+### Destroy Cloud Custodian
+* destroy Cloud Custodian resources
 ```
 cd custodian/scripts
-./deploy-custodian.sh
+python destroy-custodian.py --dry_run
+python destroy-custodian.py
 ```
+* optionally an AWS CLI profile may be set
+```
+python destroy-custodian.py --profile management
+```
+* destroy Terraform resources
+```
+terraform workspace select mgmt
+terraform destroy
+yes
+```
+
+### LINKS
+* [Cloud Custodian documentation](https://cloudcustodian.io)
+* [Cloud Custodian GitHub repository](https://github.com/cloud-custodian)
