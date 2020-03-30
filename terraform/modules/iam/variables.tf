@@ -6,6 +6,11 @@ variable "project" {
   description = "abbreviation for the project, e.g. tdr, forms the first part of the resource name"
 }
 
+variable "ec2_sg_ingress_ssh" {
+  description = "Deploy IAM role for EC2 Security Group ingress SSH policy"
+  default     = true
+}
+
 variable "iam_access_key_delete" {
   description = "Deploy IAM role for IAM Access Key Delete policy"
   default     = true
