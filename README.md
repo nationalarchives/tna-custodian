@@ -3,10 +3,11 @@
 ## ALERTS AND REMEDIATIONS
 * This implementation of Cloud Custodian includes the following alerts and automated remediations:
 
-| AWS SERVICE | RULE NAME            | CONDITION                      | REMEDIATION             |
-| ----------- | -------------------- | ------------------------------ | ----------------------- |
-| IAM         | Access-key-warn      | Access keys older than 80 days | None                    |
-| IAM         | MFA-warn             | Console user without MFA       | None                    |
+| AWS SERVICE | RULE NAME            | CONDITION                                                   | REMEDIATION                |
+| ----------- | -------------------- | ----------------------------------------------------------- | -------------------------- |
+| IAM         | Access-key-warn      | Access keys older than 80 days                              | None                       |
+| IAM         | MFA-warn             | Console user without MFA                                    | None                       |
+| EC2         | SG-ingress           | Security group with inbound from any, except HTTP and HTTPS | Remove security group rule | 
 
 ## USAGE
 
@@ -54,6 +55,15 @@ terraform apply
 cd custodian/accounts
 ./tdr-mgmt-deploy.sh
 ```
+
+### Testing new policies
+* New Cloud Custodian policies should be tested in a safe way
+* Amend custodian/scripts/deploy-custodian.sh
+* Use ```custodian run --dryrun``` and check CloudWatch logs for findings
+* For region specific policies, test in the eu-west-1 region
+* For global policies, test in another AWS account
+* Use the parameter /mgmt/slack/webhook-test for a private Slack Channel
+* Update the custodian run command with a test email address
 
 ### Destroy Cloud Custodian
 * destroy Cloud Custodian resources

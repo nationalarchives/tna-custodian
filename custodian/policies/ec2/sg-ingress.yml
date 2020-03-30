@@ -1,0 +1,44 @@
+policies:
+  - name: sg-ingress-policy
+    resource: security-group
+    mode:
+      type: periodic
+      schedule: "rate(1 hour)"
+      role: arn:aws:iam::{account_id}:role/CustodianEc2SgIngress
+      tags: {tags}
+    filters:
+      - tag:cn7_exception: absent
+      - type: ingress
+        Cidr:
+          value:
+            - "0.0.0.0/0"
+            - "::/0"
+          op: in
+        OnlyPorts: [80, 443]
+    actions:
+      - type: notify
+        template: default.html
+        priority_header: '1'
+        subject: "{{ account }} account - removed rules in AWS security group allowing inbound from any"
+        violation_desc: "Inbound from any only allowed for HTTP and HTTPS"
+        action_desc: "Removed rules in AWS security group allowing inbound from any"
+        to:
+          - {to_address}
+        transport:
+          type: sqs
+          queue: https://sqs.eu-west-1.amazonaws.com/{account_id}/custodian-mailer
+      - type: notify
+        slack_template: slack_default
+        violation_desc: "Inbound from any only allowed for HTTP and HTTPS"
+        action_desc: "Removed rules in security group allowing inbound from any"
+        to:
+          - slack://webhook/#sg-ingress
+          - https://hooks.slack.com/services/{slack_webhook}
+        transport:
+          type: sqs
+          queue: https://sqs.eu-west-1.amazonaws.com/{account_id}/custodian-mailer
+      - type: remove-permissions
+        ingress: matched
+      - type: tag
+        key: cn7_status
+        value: "Inbound from any - restrict source addresses"

@@ -42,6 +42,13 @@
           "config:Describe*"
         ],
         "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+        "Action": [
+          "iam:ListAccountAliases"
+      ],
+      "Resource": "*"
     }
   ]
 }
