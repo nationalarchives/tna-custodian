@@ -1,0 +1,38 @@
+policies:
+  - name: root-user-login-detected
+    resource: account
+    description: |
+      Notifies on AWS root user console logins
+    mode:
+      type: cloudtrail
+      events:
+        - ConsoleLogin
+      role: arn:aws:iam::{account_id}:role/CustodianCloudtrailDetectRootLogin
+    filters:
+      - type: event
+        key: "detail.userIdentity.type"
+        value_type: swap
+        op: in
+        value: Root
+    actions:
+      - type: notify
+        template: default.html
+        priority_header: 1
+        subject: "{{ account }} account - Root User Login Detected!"
+        violation_desc: "A User Has Logged Into the AWS Console With The Root User:"
+        action_desc: "Investigate root user login and revoke credentials if needed"
+        to:
+          - {to_address}
+        transport:
+          type: sqs
+          queue: https://sqs.eu-west-1.amazonaws.com/{account_id}/custodian-mailer
+      - type: notify
+        slack_template: slack_default
+        violation_desc: 'Root user login detected'
+        action_desc: 'Investigate root user login and revoke credentials if needed'
+        to:
+          - slack://webhook/#detect-root-login
+          - https://hooks.slack.com/services/{slack_webhook}
+        transport:
+          type: sqs
+          queue: https://sqs.eu-west-1.amazonaws.com/{account_id}/custodian-mailer

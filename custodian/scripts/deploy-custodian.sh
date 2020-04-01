@@ -4,7 +4,6 @@ ENVIRONMENT=$2
 TO_ADDRESS=$3
 COST_CENTRE=$(aws ssm get-parameter --name /mgmt/cost_centre | jq '.Parameter.Value' | tr -d '"')
 SLACK_WEBHOOK=$(aws ssm get-parameter --name /mgmt/slack/webhook | jq '.Parameter.Value' | tr -d '"')
-SLACK_WEBHOOK_TEST=$(aws ssm get-parameter --name /mgmt/slack/webhook-test | jq '.Parameter.Value' | tr -d '"')
 HOSTED_ZONE=$(aws route53 list-hosted-zones --max-items 1 | jq '.HostedZones[0].Name' | tr -d '"' | sed 's/.$//')
 CUSTODIAN_REGION="eu-west-2"
 SES_REGION="eu-west-1"
@@ -28,3 +27,7 @@ custodian run -s logs --region="$CUSTODIAN_REGION" --profile=management deploy.y
 echo "Deploying EC2 Security Group ingress policy to $SES_REGION"
 python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/ec2/sg-ingress.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS"
 custodian run -s logs --region="$SES_REGION" --profile=management deploy.yml
+
+echo "Deploying CloudTrail detect root user policy"
+python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/cloudtrail/detect-root-logins.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS"
+custodian run -s logs --region="$CUSTODIAN_REGION" --profile=management deploy.yml
