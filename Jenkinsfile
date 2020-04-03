@@ -20,51 +20,52 @@ pipeline {
                 TF_CLI_ARGS="-no-color"
             }
             stages {
-                stage('Set up Terraform workspace') {
-                    steps {
-                        echo 'Initializing Terraform...'
-                        cd terraform
-                        sshagent(['github-jenkins']) {
-                            sh("git clone git@github.com:nationalarchives/tdr-configurations.git")
+                dir("terraform") {
+                    stage('Set up Terraform workspace') {
+                        steps {
+                            echo 'Initializing Terraform...'
+                            sshagent(['github-jenkins']) {
+                                sh("git clone git@github.com:nationalarchives/tdr-configurations.git")
+                            }
+                            sh 'terraform init'
+                            //If Terraform workspace exists continue
+                            sh "terraform workspace new ${params.STAGE} || true"
+                            sh "terraform workspace select ${params.STAGE}"
+                            sh 'terraform workspace list'
                         }
-                        sh 'terraform init'
-                        //If Terraform workspace exists continue
-                        sh "terraform workspace new ${params.STAGE} || true"
-                        sh "terraform workspace select ${params.STAGE}"
-                        sh 'terraform workspace list'
                     }
-                }
-                stage('Run Terraform plan') {
-                    steps {
-                        echo 'Running Terraform plan...'
-                        sh 'terraform plan'
-                        slackSend(
-                                color: 'good',
-                                message: "Terraform plan complete for ${params.STAGE.capitalize()} TDR environment. View here for plan: https://jenkins.tdr-management.nationalarchives.gov.uk/job/${JOB_NAME}/${BUILD_NUMBER}/console",
-                                channel: '#tdr-releases'
-                        )
+                    stage('Run Terraform plan') {
+                        steps {
+                            echo 'Running Terraform plan...'
+                            sh 'terraform plan'
+                            slackSend(
+                                    color: 'good',
+                                    message: "Terraform plan complete for ${params.STAGE.capitalize()} TDR environment. View here for plan: https://jenkins.tdr-management.nationalarchives.gov.uk/job/${JOB_NAME}/${BUILD_NUMBER}/console",
+                                    channel: '#tdr-releases'
+                            )
+                        }
                     }
-                }
-                stage('Approve Terraform plan') {
-                    steps {
-                        echo 'Sending request for approval of Terraform plan...'
-                        slackSend(
-                                color: 'good',
-                                message: "Do you approve Terraform deployment for ${params.STAGE.capitalize()} TDR environment? jenkins.tdr-management.nationalarchives.gov.uk/job/${JOB_NAME}/${BUILD_NUMBER}/input/",
-                                channel: '#tdr-releases')
-                        input "Do you approve deployment to ${params.STAGE.capitalize()}?"
+                    stage('Approve Terraform plan') {
+                        steps {
+                            echo 'Sending request for approval of Terraform plan...'
+                            slackSend(
+                                    color: 'good',
+                                    message: "Do you approve Terraform deployment for ${params.STAGE.capitalize()} TDR environment? jenkins.tdr-management.nationalarchives.gov.uk/job/${JOB_NAME}/${BUILD_NUMBER}/input/",
+                                    channel: '#tdr-releases')
+                            input "Do you approve deployment to ${params.STAGE.capitalize()}?"
+                        }
                     }
-                }
-                stage('Apply Terraform changes') {
-                    steps {
-                        echo 'Applying Terraform changes...'
-                        sh 'echo "yes" | terraform apply'
-                        echo 'Changes applied'
-                        slackSend(
-                                color: 'good',
-                                message: "Deployment complete for ${params.STAGE.capitalize()} TDR environment",
-                                channel: '#tdr-releases'
-                        )
+                    stage('Apply Terraform changes') {
+                        steps {
+                            echo 'Applying Terraform changes...'
+                            sh 'echo "yes" | terraform apply'
+                            echo 'Changes applied'
+                            slackSend(
+                                    color: 'good',
+                                    message: "Deployment complete for ${params.STAGE.capitalize()} TDR environment",
+                                    channel: '#tdr-releases'
+                            )
+                        }
                     }
                 }
             }
@@ -78,8 +79,9 @@ pipeline {
             }
             steps {
                 script {
-                    cd accounts
-                    sh "../custodian/scripts/deploy-custodian.sh ${params.STAGE} TDR tdr-secops@nationalarchives.gov.uk"
+                    dir("accounts") {
+                        sh "../custodian/scripts/deploy-custodian.sh ${params.STAGE} TDR tdr-secops@nationalarchives.gov.uk"
+                    }
                     slackSend(
                             color: "good",
                             message: "Cloud Custodian deployed to ${params.STAGE.capitalize()} AWS account",
