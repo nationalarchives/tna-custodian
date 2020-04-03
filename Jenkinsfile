@@ -20,9 +20,9 @@ pipeline {
                 TF_CLI_ARGS="-no-color"
             }
             stages {
-                dir("terraform") {
-                    stage('Set up Terraform workspace') {
-                        steps {
+                stage('Set up Terraform workspace') {
+                    steps {
+                        dir("terraform") {
                             echo 'Initializing Terraform...'
                             sshagent(['github-jenkins']) {
                                 sh("git clone git@github.com:nationalarchives/tdr-configurations.git")
@@ -34,8 +34,10 @@ pipeline {
                             sh 'terraform workspace list'
                         }
                     }
-                    stage('Run Terraform plan') {
-                        steps {
+                }
+                stage('Run Terraform plan') {
+                    steps {
+                        dir("terraform") {
                             echo 'Running Terraform plan...'
                             sh 'terraform plan'
                             slackSend(
@@ -45,18 +47,20 @@ pipeline {
                             )
                         }
                     }
-                    stage('Approve Terraform plan') {
-                        steps {
-                            echo 'Sending request for approval of Terraform plan...'
-                            slackSend(
-                                    color: 'good',
-                                    message: "Do you approve Terraform deployment for ${params.STAGE.capitalize()} TDR environment? jenkins.tdr-management.nationalarchives.gov.uk/job/${JOB_NAME}/${BUILD_NUMBER}/input/",
-                                    channel: '#tdr-releases')
-                            input "Do you approve deployment to ${params.STAGE.capitalize()}?"
-                        }
+                }
+                stage('Approve Terraform plan') {
+                    steps {
+                        echo 'Sending request for approval of Terraform plan...'
+                        slackSend(
+                                color: 'good',
+                                message: "Do you approve Terraform deployment for ${params.STAGE.capitalize()} TDR environment? jenkins.tdr-management.nationalarchives.gov.uk/job/${JOB_NAME}/${BUILD_NUMBER}/input/",
+                                channel: '#tdr-releases')
+                        input "Do you approve deployment to ${params.STAGE.capitalize()}?"
                     }
-                    stage('Apply Terraform changes') {
-                        steps {
+                }
+                stage('Apply Terraform changes') {
+                    steps {
+                        dir("terraform") {
                             echo 'Applying Terraform changes...'
                             sh 'echo "yes" | terraform apply'
                             echo 'Changes applied'
