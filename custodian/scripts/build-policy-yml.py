@@ -3,7 +3,7 @@ from ruamel.yaml import YAML
 import argparse
 
 class policy:
-    def __init__(self, cost_centre, environment, filepath, name, owner, slack_webhook, to_address):
+    def __init__(self, cost_centre, environment, filepath, name, owner, slack_webhook, to_address, sqs_region):
         self.cost_centre = cost_centre
         self.environment = environment
         self.filepath = filepath
@@ -11,6 +11,7 @@ class policy:
         self.owner = owner
         self.slack_webhook = slack_webhook
         self.to_address = to_address
+        self.sqs_region = sqs_region
 
         path = Path(filepath)
         opath = Path('deploy.yml')
@@ -22,6 +23,8 @@ class policy:
             code['policies'][0]['mode']['tags'] = dict(CostCentre=cost_centre, Environment=environment, Name=name, Owner=owner)
             code['policies'][0]['actions'][0]['to'][0] = to_address
             code['policies'][0]['actions'][1]['to'][1] = 'https://hooks.slack.com/services/' + slack_webhook
+            code['policies'][0]['actions'][0]['transport']['queue'] = 'https://sqs.' + sqs_region + '.amazonaws.com/{account_id}/custodian-mailer'
+            code['policies'][0]['actions'][1]['transport']['queue'] = 'https://sqs.' + sqs_region + '.amazonaws.com/{account_id}/custodian-mailer'
             yaml.dump(code)
 
 if __name__ == "__main__":
@@ -34,6 +37,7 @@ if __name__ == "__main__":
     parser.add_argument('--owner', required=True)
     parser.add_argument('--slack_webhook', required=True)
     parser.add_argument('--to_address', required=True)
+    parser.add_argument('--sqs_region', required=True)
 
     args = parser.parse_args()
 
@@ -44,5 +48,6 @@ if __name__ == "__main__":
     owner = args.owner
     slack_webhook = args.slack_webhook
     to_address = args.to_address
+    sqs_region = args.sqs_region
 
-    policy(cost_centre, environment, filepath, name, owner, slack_webhook, to_address)
+    policy(cost_centre, environment, filepath, name, owner, slack_webhook, to_address, sqs_region)

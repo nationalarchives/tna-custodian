@@ -1,8 +1,11 @@
 provider "aws" {
   region = "eu-west-2"
-}
 
-provider "aws" {
-  alias  = "eu-west-1"
-  region = "eu-west-1"
+  dynamic "assume_role" {
+    for_each = var.assume_tdr_role == true ? ["include_block"] : []
+    content {
+      role_arn     = local.assume_role
+      session_name = "terraform"
+    }
+  }
 }
