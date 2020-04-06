@@ -1,6 +1,7 @@
 pipeline {
-    agent none
-
+    agent {
+        label "master"
+    }
     parameters {
         choice(name: "STAGE", choices: ["intg", "staging", "prod"], description: "AWS account being configured")
     }
