@@ -13,11 +13,13 @@ pipeline {
                     taskrole "arn:aws:iam::${env.MANAGEMENT_ACCOUNT}:role/TDRJenkinsNodeRole${params.STAGE.capitalize()}"
                 }
             }
-            environment {
-                TF_VAR_tdr_account_number = getAccountNumberFromStage()
-                //no-color option set for Terraform commands as Jenkins console unable to output the colour
-                //making output difficult to read
-                TF_CLI_ARGS = "-no-color"
+            steps {
+                environment {
+                    TF_VAR_tdr_account_number = getAccountNumberFromStage()
+                    //no-color option set for Terraform commands as Jenkins console unable to output the colour
+                    //making output difficult to read
+                    TF_CLI_ARGS = "-no-color"
+                }
             }
         }
 
