@@ -14,20 +14,20 @@ c7n-mailer -c deploy.yml --update-lambda
 
 echo "Deploying IAM Access-Key-Warn policy"
 python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/iam/access-key-warn.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION"
-custodian run -s logs --region="$CUSTODIAN_REGION" --profile=management deploy.yml
+custodian run -s logs --region="$CUSTODIAN_REGION" deploy.yml
 
 echo "Deploying IAM MFA-Warn policy"
 python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/iam/mfa-warn.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION"
-custodian run -s logs --region="$CUSTODIAN_REGION" --profile=management deploy.yml
+custodian run -s logs --region="$CUSTODIAN_REGION" deploy.yml
 
 echo "Deploying EC2 Security Group ingress policy to $CUSTODIAN_REGION"
 python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/ec2/sg-ingress.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION"
-custodian run -s logs --region="$CUSTODIAN_REGION" --profile=management deploy.yml
+custodian run -s logs --region="$CUSTODIAN_REGION" deploy.yml
 
 echo "Deploying EC2 Security Group ingress policy to $SES_REGION"
 python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/ec2/sg-ingress.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION"
-custodian run -s logs --region="$SES_REGION" --profile=management deploy.yml
+custodian run -s logs --region="$SES_REGION" deploy.yml
 
 echo "Deploying CloudTrail detect root user policy"
 python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/cloudtrail/detect-root-logins.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION"
-custodian run -s logs --region="$CUSTODIAN_REGION" --profile=management deploy.yml
+custodian run -s logs --region="$CUSTODIAN_REGION" deploy.yml
