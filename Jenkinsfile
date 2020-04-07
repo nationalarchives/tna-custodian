@@ -80,13 +80,13 @@ pipeline {
             agent {
                 ecs {
                     inheritFrom "aws"
-                    taskrole "arn:aws:iam::${env.MANAGEMENT_ACCOUNT}:role/TDRJenkinsNodeRole${params.STAGE.capitalize()}"
+                    taskrole "arn:aws:iam::${env.MANAGEMENT_ACCOUNT}:role/TDRCustodianAssumeRole${params.STAGE.capitalize()}"
                 }
             }
             steps {
                 script {
                     dir("accounts") {
-                        sh "../custodian/scripts/deploy-custodian-jenkins.sh ${params.STAGE} TDR tdr-secops@nationalarchives.gov.uk arn:aws:iam::${env.MANAGEMENT_ACCOUNT}:role/TDRCustodianAssumeRole${params.STAGE.capitalize()}"
+                        sh "../custodian/scripts/deploy-custodian-jenkins.sh ${params.STAGE} TDR tdr-secops@nationalarchives.gov.uk ${env.MANAGEMENT_ACCOUNT}"
                     }
                     slackSend(
                             color: "good",
