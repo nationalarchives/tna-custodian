@@ -42,7 +42,8 @@ source custodian/bin/activate
 (custodian) pip install c7n-mailer
 ``` 
 
-### Deploy Cloud Custodian
+### Deploy Cloud Custodian in TDR management account
+* deploy from laptop
 * deploy IAM and SQS using Terraform
 ```
 cd terraform
@@ -51,11 +52,21 @@ terraform workspace new mgmt
 terraform plan
 terraform apply
 ```
-* deploy Cloud Custodian, for example to TDR management account
+* deploy Cloud Custodian to TDR management account
 ```
 cd custodian/accounts
 ./tdr-mgmt-deploy.sh
 ```
+
+### Deploy Cloud Custodian in other TDR environments
+* deploy using Jenkins
+* use TDR Custodian Deploy pipeline
+
+### Deploy in other TNA accounts
+* set terraform variable for project, e.g. ```project = "tna"```
+* set terraform variable ```assume_tdr_role = false```
+* copy accounts/tdr-mgmt-deploy.sh, rename file and update variables as appropriate
+* deploy terraform and then run the shell script to deploy Cloud Custodian 
 
 ### Testing new policies
 * New Cloud Custodian policies should be tested in a safe way
