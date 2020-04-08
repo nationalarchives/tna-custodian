@@ -29,6 +29,14 @@
     {
       "Effect": "Allow",
       "Action": [
+        "kms:GenerateDataKey",
+        "kms:Decrypt"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
         "sns:Publish"
       ],
       "Resource": "*"
