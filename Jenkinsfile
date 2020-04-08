@@ -86,7 +86,7 @@ pipeline {
             steps {
                 script {
                     dir("accounts") {
-                        sh "../custodian/scripts/deploy-custodian-jenkins.sh ${params.STAGE} TDR tdr-secops@nationalarchives.gov.uk ${env.MANAGEMENT_ACCOUNT}"
+                        sh "../custodian/scripts/deploy-custodian-jenkins.sh ${params.STAGE} TDR tdr-secops@nationalarchives.gov.uk ${env.MANAGEMENT_ACCOUNT} arn:aws:iam::${getAccountNumberFromStage()}:role/TDRCustodianDeployRole${params.STAGE.capitalize()}"
                     }
                     slackSend(
                             color: "good",
