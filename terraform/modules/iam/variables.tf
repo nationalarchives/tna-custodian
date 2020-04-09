@@ -16,6 +16,21 @@ variable "ec2_sg_ingress_ssh" {
   default     = true
 }
 
+variable "ec2_mark_unencrypted" {
+  description = "Deploy IAM role for EC2 mark unencrypted policy"
+  default     = true
+}
+
+variable "ec2_unmark_encrypted" {
+  description = "Deploy IAM role for EC2 unmark encrypted policy"
+  default     = true
+}
+
+variable "ec2_delete_marked" {
+  description = "Deploy IAM role for EC2 delete marked policy"
+  default     = true
+}
+
 variable "iam_access_key_delete" {
   description = "Deploy IAM role for IAM Access Key Delete policy"
   default     = true
