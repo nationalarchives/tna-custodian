@@ -1,0 +1,41 @@
+policies:
+  - name: access-key-disable-policy
+    resource: iam-user
+    mode:
+        type: periodic
+        schedule: "rate(1 day)"
+        role: arn:aws:iam::{account_id}:role/CustodianIamAccessKeyDisable
+        tags: {tags}
+    filters:
+      - type: access-key
+        key: Status
+        value: Active
+      - type: access-key
+        key: CreateDate
+        value: 85
+        op: greater-than
+        value_type: age
+    actions:
+      - type: notify
+        template: default.html
+        priority_header: '1'
+        subject: "{{ account }} account - disabled access keys over 85 days old"
+        violation_desc: "AWS access keys over 85 days old"
+        action_desc: "AWS access keys have been disabled - rotate now"
+        to:
+          - {to_address}
+        transport:
+          type: sqs
+          queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer
+      - type: notify
+        slack_template: slack_default
+        violation_desc: 'AWS access keys over 85 days old'
+        action_desc: 'AWS access keys have been disabled - rotate now'
+        to:
+          - slack://webhook/#access-key-warn
+          - https://hooks.slack.com/services/{slack_webhook}
+        transport:
+          type: sqs
+          queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer
+      - type: remove-keys
+        disable: true

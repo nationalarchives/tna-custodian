@@ -8,6 +8,8 @@
 | CloudTrail  | Detect-root-login    | Root user logs in to AWS Console                            | None                       | 
 | EC2         | SG-ingress           | Security group with inbound from any, except HTTP and HTTPS | Remove security group rule | 
 | IAM         | Access-key-warn      | Access keys older than 80 days                              | None                       |
+| IAM         | Access-key-disable   | Access keys older than 85 days                              | Disable keys               |
+| IAM         | Access-key-delete    | Access keys older than 90 days                              | Delete keys                |
 | IAM         | MFA-warn             | Console user without MFA                                    | None                       |
 
 ## USAGE

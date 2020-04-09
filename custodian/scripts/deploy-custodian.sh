@@ -19,6 +19,14 @@ echo "Deploying IAM Access-Key-Warn policy"
 python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/iam/access-key-warn.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION"
 custodian run -s logs --region="$CUSTODIAN_REGION" deploy.yml
 
+echo "Deploying IAM Access-Key-Disable policy"
+python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/iam/access-key-disable.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION"
+custodian run -s logs --region="$CUSTODIAN_REGION" deploy.yml
+
+echo "Deploying IAM Access-Key-Delete policy"
+python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/iam/access-key-delete.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION"
+custodian run -s logs --region="$CUSTODIAN_REGION" deploy.yml
+
 echo "Deploying IAM MFA-Warn policy"
 python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/iam/mfa-warn.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION"
 custodian run -s logs --region="$CUSTODIAN_REGION" deploy.yml
