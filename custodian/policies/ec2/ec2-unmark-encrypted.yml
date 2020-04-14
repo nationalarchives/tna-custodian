@@ -1,0 +1,37 @@
+policies:
+  - name: ec2-unmark-encrypted
+    mode:
+      type: periodic
+      schedule: "rate(1 day)"
+      role: arn:aws:iam::{account_id}:role/CustodianUnmarkEncryptedEC2
+    resource: aws.ec2
+    description: |
+      Unmarks any EC2 instances scheduled for deletion if they are now using encrypted EBS
+    filters:
+      - type: ebs
+        key: Encrypted
+        value: True
+      - "tag:maid_status": not-null
+    actions:
+      - type: notify
+        template: default.html
+        priority_header: '1'
+        subject: "{{ account }} account - EC2 instance will no longer be deleted"
+        violation_desc: "Previously scheduled for deletion"
+        action_desc: "EC2 instance will no longer be deleted as EBS is now encrypted"
+        to:
+          - {to_address}
+        transport:
+          type: sqs
+          queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer
+      - type: notify
+        slack_template: slack_default
+        violation_desc: "Previously scheduled for deletion"
+        action_desc: "EC2 instance will no longer be deleted as EBS is now encrypted"
+        to:
+          - slack://webhook/#ec2-mark-unencrypted
+          - https://hooks.slack.com/services/{slack_webhook}
+        transport:
+          type: sqs
+          queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer
+      - type: unmark

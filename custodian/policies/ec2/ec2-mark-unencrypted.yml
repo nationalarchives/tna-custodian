@@ -1,0 +1,41 @@
+policies:
+  - name: ec2-mark-unencrypted
+    mode:
+      type: cloudtrail
+      role: arn:aws:iam::{account_id}:role/CustodianMarkUnencryptedEC2
+      events:
+        - RunInstances
+    resource: aws.ec2
+    description: |
+      Provisions a lambda and cloud watch event target that looks at all new instances
+      and marks those with unencrypted volumes for deletion
+    filters:
+      - type: ebs
+        key: Encrypted
+        value: false
+      - "tag:maid_status": absent
+    actions:
+      - type: notify
+        template: default.html
+        priority_header: '1'
+        subject: "{{ account }} account - marked EC2 instance with unencrypted EBS for deletion"
+        violation_desc: "EC2 instance with unencrypted EBS volume"
+        action_desc: "Marked EC2 instance for deletion in 4 days"
+        to:
+          - {to_address}
+        transport:
+          type: sqs
+          queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer
+      - type: notify
+        slack_template: slack_default
+        violation_desc: "EC2 instance with unencrypted EBS volume"
+        action_desc: "Marked EC2 instance for deletion in 4 days"
+        to:
+          - slack://webhook/#ec2-mark-unencrypted
+          - https://hooks.slack.com/services/{slack_webhook}
+        transport:
+          type: sqs
+          queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer
+      - type: mark-for-op
+        op: delete
+        days: 3

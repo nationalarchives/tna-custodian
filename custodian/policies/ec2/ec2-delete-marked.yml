@@ -1,0 +1,36 @@
+policies:
+  - name: ec2-delete-marked-policy
+    mode:
+      type: periodic
+      schedule: "rate(1 day)"
+      role: arn:aws:iam::{account_id}:role/CustodianDeleteMarkedEC2
+    resource: aws.ec2
+    comments: |
+      Delete any EC2 instances scheduled for deletion
+    filters:
+      - type: marked-for-op
+        op: delete
+    actions:
+      - type: notify
+        template: default.html
+        priority_header: '1'
+        subject: "{{ account }} account - deleted EC2 instance"
+        violation_desc: "EC2 instance not compliant"
+        action_desc: "Deleted EC2 instance after specified time"
+        to:
+          - {to_address}
+        transport:
+          type: sqs
+          queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer
+      - type: notify
+        slack_template: slack_default
+        violation_desc: "EC2 instance not compliant"
+        action_desc: "Deleted EC2 instance after specified time"
+        to:
+          - slack://webhook/#ec2-delete-marked
+          - https://hooks.slack.com/services/{slack_webhook}
+        transport:
+          type: sqs
+          queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer
+      - type: terminate
+          force: true
