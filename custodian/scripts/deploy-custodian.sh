@@ -6,6 +6,7 @@ COST_CENTRE=$(aws ssm get-parameter --name /mgmt/cost_centre | jq '.Parameter.Va
 SLACK_WEBHOOK=$(aws ssm get-parameter --name /mgmt/slack/webhook | jq '.Parameter.Value' | tr -d '"')
 HOSTED_ZONE=$(aws route53 list-hosted-zones --max-items 1 | jq '.HostedZones[0].Name' | tr -d '"' | sed 's/.$//')
 CUSTODIAN_REGION="eu-west-2"
+CUSTODIAN_REGION_2="eu-west-1"
 SES_REGION="eu-west-2"
 SQS_ACCOUNT=$(aws sts get-caller-identity | jq '.Account' | tr -d '"')
 
@@ -35,10 +36,34 @@ echo "Deploying EC2 Security Group ingress policy to $CUSTODIAN_REGION"
 python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/ec2/sg-ingress.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION"
 custodian run -s logs --region="$CUSTODIAN_REGION" deploy.yml
 
-echo "Deploying EC2 Security Group ingress policy to $SES_REGION"
+echo "Deploying EC2 Security Group ingress policy to $CUSTODIAN_REGION_2"
 python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/ec2/sg-ingress.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION"
-custodian run -s logs --region="$SES_REGION" deploy.yml
+custodian run -s logs --region="$CUSTODIAN_REGION_2" deploy.yml
 
 echo "Deploying CloudTrail detect root user policy"
 python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/cloudtrail/detect-root-logins.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION"
 custodian run -s logs --region="$CUSTODIAN_REGION" deploy.yml
+
+echo "Deploying CloudTrail mark unencrypted EC2 instance policy to $CUSTODIAN_REGION"
+python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/ec2/ec2-mark-unencrypted.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION"
+custodian run -s logs --region="$CUSTODIAN_REGION" deploy.yml
+
+echo "Deploying CloudTrail mark unencrypted EC2 instance policy to $CUSTODIAN_REGION_2"
+python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/ec2/ec2-mark-unencrypted.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION"
+custodian run -s logs --region="$CUSTODIAN_REGION_2" deploy.yml
+
+echo "Deploying CloudTrail unmark encrypted EC2 instance policy to $CUSTODIAN_REGION"
+python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/ec2/ec2-unmark-encrypted.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION"
+custodian run -s logs --region="$CUSTODIAN_REGION" deploy.yml
+
+echo "Deploying CloudTrail unmark encrypted EC2 instance policy to $CUSTODIAN_REGION_2"
+python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/ec2/ec2-unmark-encrypted.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION"
+custodian run -s logs --region="$CUSTODIAN_REGION_2" deploy.yml
+
+echo "Deploying CloudTrail delete marked EC2 instance policy to $CUSTODIAN_REGION"
+python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/ec2/ec2-delete-marked.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION"
+custodian run -s logs --region="$CUSTODIAN_REGION" deploy.yml
+
+echo "Deploying CloudTrail delete marked EC2 instance policy to $CUSTODIAN_REGION_2"
+python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/ec2/ec2-delete-marked.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION"
+custodian run -s logs --region="$CUSTODIAN_REGION_2" deploy.yml

@@ -11,7 +11,7 @@ policies:
       - type: ebs
         key: Encrypted
         value: True
-      - "tag:maid_status": not-null
+      - "tag:custodian_ec2_not_encrypted": not-null
     actions:
       - type: notify
         template: default.html
@@ -35,3 +35,4 @@ policies:
           type: sqs
           queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer
       - type: unmark
+        tags: ["custodian_ec2_not_encrypted"]

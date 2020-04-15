@@ -3,14 +3,17 @@
 ## ALERTS AND REMEDIATIONS
 * This implementation of Cloud Custodian includes the following alerts and automated remediations:
 
-| AWS SERVICE | RULE NAME            | CONDITION                                                   | REMEDIATION                |
-| ----------- | -------------------- | ----------------------------------------------------------- | -------------------------- |
-| CloudTrail  | Detect-root-login    | Root user logs in to AWS Console                            | None                       | 
-| EC2         | SG-ingress           | Security group with inbound from any, except HTTP and HTTPS | Remove security group rule | 
-| IAM         | Access-key-warn      | Access keys older than 80 days                              | None                       |
-| IAM         | Access-key-disable   | Access keys older than 85 days                              | Disable keys               |
-| IAM         | Access-key-delete    | Access keys older than 90 days                              | Delete keys                |
-| IAM         | MFA-warn             | Console user without MFA                                    | None                       |
+| AWS SERVICE | RULE NAME            | CONDITION                                                   | REMEDIATION                 |
+| ----------- | -------------------- | ----------------------------------------------------------- | --------------------------- |
+| CloudTrail  | Detect-root-login    | Root user logs in to AWS Console                            | None                        | 
+| EC2         | SG-ingress           | Security group with inbound from any, except HTTP and HTTPS | Remove security group rule  | 
+| EC2         | Mark-unencrypted     | EC2 virtual machine not encrypted                           | Mark for deletion in 3 days | 
+| EC2         | Unmark-encrypted     | Previously marked virtual machine now encrypted             | Remove mark                 | 
+| EC2         | Delete-marked        | Marked virtual machine date condition met                   | Terminate instance          | 
+| IAM         | Access-key-warn      | Access keys older than 80 days                              | None                        |
+| IAM         | Access-key-disable   | Access keys older than 85 days                              | Disable keys                |
+| IAM         | Access-key-delete    | Access keys older than 90 days                              | Delete keys                 |
+| IAM         | MFA-warn             | Console user without MFA                                    | None                        |
 
 ## USAGE
 
@@ -62,6 +65,7 @@ cd custodian/accounts
 * Use TDR Custodian Deploy pipeline
 
 ### Deploy in other TNA accounts
+* Pass in the terraform backend via the command line
 * Set terraform variable for project, e.g. ```project = "tna"```
 * Set terraform variable ```assume_tdr_role = false```
 * Copy accounts/tdr-mgmt-deploy.sh, rename file and update variables as appropriate

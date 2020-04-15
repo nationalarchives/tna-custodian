@@ -20,7 +20,7 @@ policies:
         priority_header: '1'
         subject: "{{ account }} account - marked EC2 instance with unencrypted EBS for deletion"
         violation_desc: "EC2 instance with unencrypted EBS volume"
-        action_desc: "Marked EC2 instance for deletion in 4 days"
+        action_desc: "Marked EC2 instance for deletion in 3 days"
         to:
           - {to_address}
         transport:
@@ -29,7 +29,7 @@ policies:
       - type: notify
         slack_template: slack_default
         violation_desc: "EC2 instance with unencrypted EBS volume"
-        action_desc: "Marked EC2 instance for deletion in 4 days"
+        action_desc: "Marked EC2 instance for deletion in 3 days"
         to:
           - slack://webhook/#ec2-mark-unencrypted
           - https://hooks.slack.com/services/{slack_webhook}
@@ -37,5 +37,6 @@ policies:
           type: sqs
           queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer
       - type: mark-for-op
-        op: delete
+        tag: custodian_ec2_not_encrypted
+        op: terminate
         days: 3

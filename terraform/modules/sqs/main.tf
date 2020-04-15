@@ -2,7 +2,7 @@ resource "aws_sqs_queue" "custodian_mailer_queue" {
   count                     = var.project == "tdr" && local.environment != "mgmt" ? 0 : 1
   name                      = "custodian-mailer"
   delay_seconds             = 90
-  max_message_size          = 2048
+  max_message_size          = 262144
   message_retention_seconds = 86400
   receive_wait_time_seconds = 10
   kms_master_key_id         = var.kms_master_key_id

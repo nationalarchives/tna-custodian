@@ -5,11 +5,12 @@ policies:
       schedule: "rate(1 day)"
       role: arn:aws:iam::{account_id}:role/CustodianDeleteMarkedEC2
     resource: aws.ec2
-    comments: |
+    description: |
       Delete any EC2 instances scheduled for deletion
     filters:
       - type: marked-for-op
-        op: delete
+        tag: custodian_ec2_not_encrypted
+        op: terminate
     actions:
       - type: notify
         template: default.html
@@ -33,4 +34,4 @@ policies:
           type: sqs
           queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer
       - type: terminate
-          force: true
+        force: true
