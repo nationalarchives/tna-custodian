@@ -9,6 +9,7 @@
         "ec2:Describe*",
         "ec2:DetachNetworkInterface",
         "ec2:DisassociateAddress",
+        "ec2:ModifyInstanceAttribute",
         "ec2:ReleaseAddress",
         "ec2:StopInstances",
         "ec2:TerminateInstances"

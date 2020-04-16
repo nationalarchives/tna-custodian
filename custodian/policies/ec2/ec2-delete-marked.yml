@@ -17,7 +17,7 @@ policies:
         priority_header: '1'
         subject: "{{ account }} account - deleted EC2 instance"
         violation_desc: "EC2 instance not compliant"
-        action_desc: "Deleted EC2 instance after specified time"
+        action_desc: "Terminated EC2 instance after specified time"
         to:
           - {to_address}
         transport:
@@ -26,7 +26,7 @@ policies:
       - type: notify
         slack_template: slack_default
         violation_desc: "EC2 instance not compliant"
-        action_desc: "Deleted EC2 instance after specified time"
+        action_desc: "Terminated EC2 instance after specified time"
         to:
           - slack://webhook/#ec2-delete-marked
           - https://hooks.slack.com/services/{slack_webhook}
