@@ -1,0 +1,37 @@
+policies:
+  - name: s3-unmark-encrypted
+    mode:
+      type: periodic
+      schedule: "rate(1 hour)"
+      role: arn:aws:iam::{account_id}:role/CustodianUnmarkEncryptedS3
+    resource: aws.s3
+    description: |
+      Unmarks S3 buckets previously marked for deletion which are now encrypted
+    filters:
+      - type: bucket-encryption
+        state: True
+      - "tag:custodian_s3_not_encrypted": present
+    actions:
+      - type: notify
+        template: default.html
+        priority_header: '1'
+        subject: "{{ account }} account - S3 bucket now encrypted"
+        violation_desc: "None"
+        action_desc: "S3 bucket will no longer be deleted"
+        to:
+          - {to_address}
+        transport:
+          type: sqs
+          queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer
+      - type: notify
+        slack_template: slack_default
+        violation_desc: "S3 bucket now encrypted"
+        action_desc: "S3 bucket will no longer be deleted"
+        to:
+          - slack://webhook/#s3-unmark-encrypted
+          - https://hooks.slack.com/services/{slack_webhook}
+        transport:
+          type: sqs
+          queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer
+      - type: unmark
+        tags: ["custodian_s3_not_encrypted"]

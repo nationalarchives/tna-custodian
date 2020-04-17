@@ -14,6 +14,9 @@
 | IAM         | Access-key-disable   | Access keys older than 85 days                              | Disable keys                |
 | IAM         | Access-key-delete    | Access keys older than 90 days                              | Delete keys                 |
 | IAM         | MFA-warn             | Console user without MFA                                    | None                        |
+| S3          | Mark-unencrypted     | S3 bucket not encrypted                                     | Mark for deletion in 3 days | 
+| S3          | Unmark-encrypted     | Previously marked S3 bucket now encrypted                   | Remove mark                 | 
+| S3          | Delete-marked        | Marked S3 bucket date condition met                         | Terminate instance          | 
 
 ## USAGE
 
@@ -47,6 +50,7 @@ source custodian/bin/activate
 ### Deploy Cloud Custodian in TDR management account
 * Deploy from laptop
 * Deploy IAM and SQS using Terraform
+* create a file terraform.tfvars in the terraform folder, with e.g. ```tdr_account_number = "012345678901"```
 ```
 cd terraform
 git clone git@github.com:nationalarchives/tdr-configurations.git
@@ -74,9 +78,9 @@ cd custodian/accounts
 ### Testing new policies
 * New Cloud Custodian policies should be tested in a safe way
 * Amend custodian/scripts/deploy-custodian.sh
-* Use ```custodian run --dryrun``` and check CloudWatch logs for findings
+* Use ```custodian run --dryrun``` and check local logs in the accounts folder for findings
 * For region specific policies, test in the eu-west-1 region
-* For global policies, test in another AWS account
+* For global policies, another option is to test in another AWS account
 * Use the parameter /mgmt/slack/webhook-test for a private Slack Channel
 * Update the custodian run command with a test email address
 

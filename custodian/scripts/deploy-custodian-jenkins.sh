@@ -62,3 +62,15 @@ custodian run -s logs --region="$CUSTODIAN_REGION" --assume="$ASSUME_ROLE" deplo
 echo "Deploying CloudTrail delete marked EC2 instance policy to $CUSTODIAN_REGION_2"
 python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/ec2/ec2-delete-marked.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION" --sqs_account "$SQS_ACCOUNT"
 custodian run -s logs --region="$CUSTODIAN_REGION_2" --assume="$ASSUME_ROLE" deploy.yml
+
+echo "Deploying mark unencrypted S3 bucket policy to $CUSTODIAN_REGION"
+python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/s3/s3-mark-unencrypted.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION" --sqs_account "$SQS_ACCOUNT"
+custodian run -s logs --region="$CUSTODIAN_REGION" --assume="$ASSUME_ROLE" deploy.yml
+
+echo "Deploying unmark encrypted S3 bucket policy to $CUSTODIAN_REGION"
+python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/s3/s3-unmark-encrypted.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION" --sqs_account "$SQS_ACCOUNT"
+custodian run -s logs --region="$CUSTODIAN_REGION" --assume="$ASSUME_ROLE" deploy.yml
+
+echo "Deploying delete marked S3 bucket policy to $CUSTODIAN_REGION"
+python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/s3/s3-delete-marked.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION" --sqs_account "$SQS_ACCOUNT"
+custodian run -s logs --region="$CUSTODIAN_REGION" --assume="$ASSUME_ROLE" deploy.yml

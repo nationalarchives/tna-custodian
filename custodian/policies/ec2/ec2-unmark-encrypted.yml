@@ -29,7 +29,7 @@ policies:
         violation_desc: "Previously scheduled for deletion"
         action_desc: "EC2 instance will no longer be deleted as EBS is now encrypted"
         to:
-          - slack://webhook/#ec2-mark-unencrypted
+          - slack://webhook/#ec2-unmark-encrypted
           - https://hooks.slack.com/services/{slack_webhook}
         transport:
           type: sqs

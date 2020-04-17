@@ -13,7 +13,7 @@ policies:
       - type: ebs
         key: Encrypted
         value: false
-      - "tag:maid_status": absent
+      - "tag:custodian_ec2_not_encrypted": absent
     actions:
       - type: notify
         template: default.html
