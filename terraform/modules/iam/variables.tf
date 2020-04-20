@@ -55,3 +55,18 @@ variable "mailer" {
   description = "Deploy IAM role for mailer"
   default     = true
 }
+
+variable "s3_mark_unencrypted" {
+  description = "Deploy IAM role for S3 mark unencrypted policy"
+  default     = true
+}
+
+variable "s3_unmark_encrypted" {
+  description = "Deploy IAM role for S3 unmark encrypted policy"
+  default     = true
+}
+
+variable "s3_delete_marked" {
+  description = "Deploy IAM role for S3 delete marked policy"
+  default     = true
+}

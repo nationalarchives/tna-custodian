@@ -3,14 +3,20 @@
 ## ALERTS AND REMEDIATIONS
 * This implementation of Cloud Custodian includes the following alerts and automated remediations:
 
-| AWS SERVICE | RULE NAME            | CONDITION                                                   | REMEDIATION                |
-| ----------- | -------------------- | ----------------------------------------------------------- | -------------------------- |
-| CloudTrail  | Detect-root-login    | Root user logs in to AWS Console                            | None                       | 
-| EC2         | SG-ingress           | Security group with inbound from any, except HTTP and HTTPS | Remove security group rule | 
-| IAM         | Access-key-warn      | Access keys older than 80 days                              | None                       |
-| IAM         | Access-key-disable   | Access keys older than 85 days                              | Disable keys               |
-| IAM         | Access-key-delete    | Access keys older than 90 days                              | Delete keys                |
-| IAM         | MFA-warn             | Console user without MFA                                    | None                       |
+| AWS SERVICE | RULE NAME            | CONDITION                                                   | REMEDIATION                 |
+| ----------- | -------------------- | ----------------------------------------------------------- | --------------------------- |
+| CloudTrail  | Detect-root-login    | Root user logs in to AWS Console                            | None                        | 
+| EC2         | SG-ingress           | Security group with inbound from any, except HTTP and HTTPS | Remove security group rule  | 
+| EC2         | Mark-unencrypted     | EC2 virtual machine not encrypted                           | Mark for deletion in 3 days | 
+| EC2         | Unmark-encrypted     | Previously marked virtual machine now encrypted             | Remove mark                 | 
+| EC2         | Delete-marked        | Marked virtual machine date condition met                   | Terminate instance          | 
+| IAM         | Access-key-warn      | Access keys older than 80 days                              | None                        |
+| IAM         | Access-key-disable   | Access keys older than 85 days                              | Disable keys                |
+| IAM         | Access-key-delete    | Access keys older than 90 days                              | Delete keys                 |
+| IAM         | MFA-warn             | Console user without MFA                                    | None                        |
+| S3          | Mark-unencrypted     | S3 bucket not encrypted                                     | Mark for deletion in 3 days | 
+| S3          | Unmark-encrypted     | Previously marked S3 bucket now encrypted                   | Remove mark                 | 
+| S3          | Delete-marked        | Marked S3 bucket date condition met                         | Terminate instance          | 
 
 ## USAGE
 
@@ -44,6 +50,7 @@ source custodian/bin/activate
 ### Deploy Cloud Custodian in TDR management account
 * Deploy from laptop
 * Deploy IAM and SQS using Terraform
+* create a file terraform.tfvars in the terraform folder, with e.g. ```tdr_account_number = "012345678901"```
 ```
 cd terraform
 git clone git@github.com:nationalarchives/tdr-configurations.git
@@ -62,6 +69,7 @@ cd custodian/accounts
 * Use TDR Custodian Deploy pipeline
 
 ### Deploy in other TNA accounts
+* Pass in the terraform backend via the command line
 * Set terraform variable for project, e.g. ```project = "tna"```
 * Set terraform variable ```assume_tdr_role = false```
 * Copy accounts/tdr-mgmt-deploy.sh, rename file and update variables as appropriate
@@ -70,9 +78,9 @@ cd custodian/accounts
 ### Testing new policies
 * New Cloud Custodian policies should be tested in a safe way
 * Amend custodian/scripts/deploy-custodian.sh
-* Use ```custodian run --dryrun``` and check CloudWatch logs for findings
+* Use ```custodian run --dryrun``` and check local logs in the accounts folder for findings
 * For region specific policies, test in the eu-west-1 region
-* For global policies, test in another AWS account
+* For global policies, another option is to test in another AWS account
 * Use the parameter /mgmt/slack/webhook-test for a private Slack Channel
 * Update the custodian run command with a test email address
 

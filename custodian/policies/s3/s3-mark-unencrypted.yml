@@ -1,0 +1,39 @@
+policies:
+  - name: s3-mark-unencrypted
+    mode:
+      type: periodic
+      schedule: "rate(1 hour)"
+      role: arn:aws:iam::{account_id}:role/CustodianMarkUnencryptedS3
+    resource: aws.s3
+    description: |
+      Scans all S3 buckets and marks unencrypted buckets for deletion
+    filters:
+      - type: bucket-encryption
+        state: False
+      - "tag:custodian_s3_not_encrypted": absent
+    actions:
+      - type: notify
+        template: default.html
+        priority_header: '1'
+        subject: "{{ account }} account - marked unencrypted S3 bucket for deletion"
+        violation_desc: "Unencrypted S3 bucket"
+        action_desc: "Marked S3 bucket for deletion in 3 days"
+        to:
+          - {to_address}
+        transport:
+          type: sqs
+          queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer
+      - type: notify
+        slack_template: slack_default
+        violation_desc: "Unencrypted S3 bucket"
+        action_desc: "Marked S3 bucket for deletion in 3 days"
+        to:
+          - slack://webhook/#s3-mark-unencrypted
+          - https://hooks.slack.com/services/{slack_webhook}
+        transport:
+          type: sqs
+          queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer
+      - type: mark-for-op
+        tag: custodian_s3_not_encrypted
+        op: delete
+        days: 3
