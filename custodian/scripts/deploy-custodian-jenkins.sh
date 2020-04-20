@@ -78,4 +78,4 @@ custodian run -s logs --region="$CUSTODIAN_REGION_1" --assume="$ASSUME_ROLE" dep
 
 echo "Deploying Guard Duty notify policy"
 python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/guardduty/guard-duty-notify.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION" --sqs_account "$SQS_ACCOUNT"
-custodian run -s logs --region="$CUSTODIAN_REGION_1" deploy.yml --assume="$ASSUME_ROLE" deploy.yml
+custodian run -s logs --region="$CUSTODIAN_REGION_1" --assume="$ASSUME_ROLE" deploy.yml
