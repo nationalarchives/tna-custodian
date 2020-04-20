@@ -10,6 +10,7 @@
 | EC2         | Mark-unencrypted     | EC2 virtual machine not encrypted                           | Mark for deletion in 3 days | 
 | EC2         | Unmark-encrypted     | Previously marked virtual machine now encrypted             | Remove mark                 | 
 | EC2         | Delete-marked        | Marked virtual machine date condition met                   | Terminate instance          | 
+| GuardDuty   | Notify               | Guard Duty finding with medium or high priority             | None                        | 
 | IAM         | Access-key-warn      | Access keys older than 80 days                              | None                        |
 | IAM         | Access-key-disable   | Access keys older than 85 days                              | Disable keys                |
 | IAM         | Access-key-delete    | Access keys older than 90 days                              | Delete keys                 |
@@ -41,9 +42,10 @@ source custodian/bin/activate
 (custodian) pip install c7n
 ```
 
-### Install Custodian Mailer
+### Install Custodian Tools
 * Ensure you are still within the Python virtual environment
 ```
+(custodian) pip install c7n-guardian
 (custodian) pip install c7n-mailer
 ``` 
 

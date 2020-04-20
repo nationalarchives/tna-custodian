@@ -31,6 +31,11 @@ variable "ec2_delete_marked" {
   default     = true
 }
 
+variable "guard_duty_notify" {
+  description = "Notify on Guard Duty findings"
+  default     = true
+}
+
 variable "iam_access_key_delete" {
   description = "Deploy IAM role for IAM Access Key Delete policy"
   default     = true
