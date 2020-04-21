@@ -1,0 +1,34 @@
+policies:
+  - name: guard-duty-notify
+    resource: ec2
+    mode:
+      role: arn:aws:iam::{account_id}:role/CustodianGuardDutyNotify
+      type: guard-duty
+    filters:
+      # Filter for medium and high severity events
+      - type: event
+        key: detail.severity
+        op: gte
+        value: 4.5
+    actions:
+      - type: notify
+        template: default.html
+        priority_header: '1'
+        subject: "{{ account }} account - Guard Duty alert"
+        violation_desc: "Guard Duty alert"
+        action_desc: "Investigate and take action as needed"
+        to:
+          - {to_address}
+        transport:
+          type: sqs
+          queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer
+      - type: notify
+        slack_template: slack_default
+        violation_desc: "Guard Duty alert"
+        action_desc: "Investigate and take action as needed"
+        to:
+          - slack://webhook/#guard-duty-notify
+          - https://hooks.slack.com/services/{slack_webhook}
+        transport:
+          type: sqs
+          queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer

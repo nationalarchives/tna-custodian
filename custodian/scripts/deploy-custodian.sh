@@ -79,3 +79,7 @@ custodian run -s logs --region="$CUSTODIAN_REGION_1" deploy.yml
 echo "Deploying delete marked S3 bucket policy"
 python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/s3/s3-delete-marked.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION"
 custodian run -s logs --region="$CUSTODIAN_REGION_1" deploy.yml
+
+echo "Deploying Guard Duty notify policy"
+python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/guardduty/guard-duty-notify.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION"
+custodian run -s logs --region="$CUSTODIAN_REGION_1" deploy.yml
