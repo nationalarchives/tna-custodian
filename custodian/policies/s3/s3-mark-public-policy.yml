@@ -1,0 +1,48 @@
+policies:
+  - name: s3-mark-public-policy
+    mode:
+      type: periodic
+      schedule: "rate(1 hour)"
+      role: arn:aws:iam::{account_id}:role/CustodianS3PublicAccess
+    resource: aws.s3
+    description: |
+      Scans all S3 buckets and marks those with a public access policy for deletion
+    filters:
+      - or:
+        - type: has-statement
+          statements:
+            - Effect: Allow
+              Action: 's3:*'
+              Principal: '*'
+        - type: has-statement
+          statements:
+            - Effect: Allow
+              Action: 's3:GetObject'
+              Principal: '*'
+      - "tag:custodian_s3_public_access": absent
+    actions:
+      - type: notify
+        template: default.html
+        priority_header: '1'
+        subject: "{{ account }} account - public S3 bucket policy"
+        violation_desc: "S3 bucket with public access policy"
+        action_desc: "Marked S3 bucket for deletion in 3 days"
+        to:
+          - {to_address}
+        transport:
+          type: sqs
+          queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer
+      - type: notify
+        slack_template: slack_default
+        violation_desc: "S3 bucket with public access policy"
+        action_desc: "Marked S3 bucket for deletion in 3 days"
+        to:
+          - slack://webhook/#s3-public-access
+          - https://hooks.slack.com/services/{slack_webhook}
+        transport:
+          type: sqs
+          queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer
+      - type: mark-for-op
+        tag: custodian_s3_public_access
+        op: delete
+        days: 3

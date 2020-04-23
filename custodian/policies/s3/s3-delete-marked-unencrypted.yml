@@ -1,12 +1,12 @@
 policies:
-  - name: s3-delete-marked-policy
+  - name: s3-delete-marked-unencrypted-policy
     mode:
       type: periodic
       schedule: "rate(1 day)"
       role: arn:aws:iam::{account_id}:role/CustodianDeleteMarkedS3
     resource: aws.s3
     description: |
-      Delete S3 buckets scheduled for deletion
+      Delete unencrypted S3 buckets scheduled for deletion
     filters:
       - type: marked-for-op
         tag: custodian_s3_not_encrypted

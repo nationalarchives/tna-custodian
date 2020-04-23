@@ -13,7 +13,7 @@ resource "aws_iam_role_policy_attachment" "s3_unmark_encrypted_common_policy_att
 resource "aws_iam_policy" "s3_unmark_encrypted_policy" {
   count  = var.s3_unmark_encrypted == true ? 1 : 0
   name   = "${upper(var.project)}CustodianUnmarkEncryptedS3${title(local.environment)}"
-  policy = templatefile("./modules/iam/templates/custom/s3-unmark-encrypted/s3_unmark_encrypted_policy.json.tpl", {})
+  policy = templatefile("./modules/iam/templates/custom/s3_unmark_encrypted_policy.json.tpl", {})
 }
 
 resource "aws_iam_role_policy_attachment" "s3_unmark_encrypted_policy_attach" {

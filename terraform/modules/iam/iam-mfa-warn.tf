@@ -13,7 +13,7 @@ resource "aws_iam_role" "iam_mfa_warn_assume_role" {
 resource "aws_iam_policy" "iam_mfa_warn_policy" {
   count  = var.iam_mfa_warn == true ? 1 : 0
   name   = "${upper(var.project)}CustodianIamMfaWarn${title(local.environment)}"
-  policy = templatefile("./modules/iam/templates/custom/iam-mfa-warn/iam_mfa_warn_policy.json.tpl", {})
+  policy = templatefile("./modules/iam/templates/custom/iam_mfa_warn_policy.json.tpl", {})
 }
 
 resource "aws_iam_role_policy_attachment" "iam_mfa_warn_policy_attach" {

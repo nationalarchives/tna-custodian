@@ -13,7 +13,7 @@ resource "aws_iam_role_policy_attachment" "s3_delete_marked_common_policy_attach
 resource "aws_iam_policy" "s3_delete_marked_policy" {
   count  = var.s3_delete_marked == true ? 1 : 0
   name   = "${upper(var.project)}CustodianDeleteMarkedS3${title(local.environment)}"
-  policy = templatefile("./modules/iam/templates/custom/s3-delete-marked/s3_delete_marked_policy.json.tpl", {})
+  policy = templatefile("./modules/iam/templates/custom/s3_delete_marked_policy.json.tpl", {})
 }
 
 resource "aws_iam_role_policy_attachment" "s3_delete_marked_policy_attach" {

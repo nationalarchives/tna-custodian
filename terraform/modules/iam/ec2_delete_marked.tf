@@ -13,7 +13,7 @@ resource "aws_iam_role_policy_attachment" "ec2_delete_marked_common_policy_attac
 resource "aws_iam_policy" "ec2_delete_marked_policy" {
   count  = var.ec2_delete_marked == true ? 1 : 0
   name   = "${upper(var.project)}CustodianDeleteMarkedEC2${title(local.environment)}"
-  policy = templatefile("./modules/iam/templates/custom/ec2-delete-marked/ec2_delete_marked_policy.json.tpl", {})
+  policy = templatefile("./modules/iam/templates/custom/ec2_delete_marked_policy.json.tpl", {})
 }
 
 resource "aws_iam_role_policy_attachment" "ec2_delete_marked_policy_attach" {

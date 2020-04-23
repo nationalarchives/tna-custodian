@@ -75,3 +75,13 @@ variable "s3_delete_marked" {
   description = "Deploy IAM role for S3 delete marked policy"
   default     = true
 }
+
+variable "s3_public_access" {
+  description = "Deploy IAM role for S3 public access policy"
+  default     = true
+}
+
+variable "s3_remove_public_acl" {
+  description = "Deploy IAM role for S3 remove public acl policy"
+  default     = true
+}
