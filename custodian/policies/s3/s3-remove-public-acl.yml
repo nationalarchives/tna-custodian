@@ -26,7 +26,7 @@ policies:
         violation_desc: "S3 bucket with public access"
         action_desc: "Removed public ACLs at bucket level - objects may still be public"
         to:
-          - slack://webhook/#s3-public-access
+          - slack://webhook/#s3-remove-public-access
           - https://hooks.slack.com/services/{slack_webhook}
         transport:
           type: sqs

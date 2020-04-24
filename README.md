@@ -22,6 +22,7 @@
 | S3          | Mark-public-policy          | S3 bucket with public policy                                | Mark for deletion in 3 days | 
 | S3          | Unmark-public-policy        | Previously marked S3 bucket no longer public                | Remove mark                 | 
 | S3          | Delete-marked-public-policy | Marked S3 bucket date condition met                         | Terminate instance          | 
+| VPC         | Notify-no-flow-logs         | VPC flow logs not configured and enabled                    | None                        | 
 
 ## USAGE
 
