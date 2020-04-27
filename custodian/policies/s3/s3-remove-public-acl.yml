@@ -1,0 +1,40 @@
+policies:
+  - name: s3-remove-public-acls
+    mode:
+      type: periodic
+      schedule: "rate(1 hour)"
+      role: arn:aws:iam::{account_id}:role/CustodianS3RemovePublicAcl
+    resource: aws.s3
+    description: |
+      Scans all S3 buckets and removes public acls
+    filters:
+      - type: global-grants
+    actions:
+      - type: notify
+        template: default.html
+        priority_header: '1'
+        subject: "{{ account }} account - public S3 bucket ACLs"
+        violation_desc: "S3 bucket with public access"
+        action_desc: "Removed public ACLs at bucket level - objects may still be public"
+        to:
+          - {to_address}
+        transport:
+          type: sqs
+          queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer
+      - type: notify
+        slack_template: slack_default
+        violation_desc: "S3 bucket with public access"
+        action_desc: "Removed public ACLs at bucket level - objects may still be public"
+        to:
+          - slack://webhook/#s3-remove-public-access
+          - https://hooks.slack.com/services/{slack_webhook}
+        transport:
+          type: sqs
+          queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer
+      - type: delete-global-grants
+        grantees:
+          - "http://acs.amazonaws.com/groups/global/AllUsers"
+          - "http://acs.amazonaws.com/groups/global/AuthenticatedUsers"
+      - type: tag
+        key: cn7_status
+        value: "Removed public ACLs at bucket level"

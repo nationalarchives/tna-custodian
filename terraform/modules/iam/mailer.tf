@@ -25,7 +25,7 @@ resource "aws_iam_role_policy_attachment" "mailer_lambda_common_policy_attach" {
 }
 
 data "template_file" "mailer_policy" {
-  template = file("./modules/iam/templates/custom/mailer/mailer_policy.json.tpl")
+  template = file("./modules/iam/templates/custom/mailer_policy.json.tpl")
 }
 
 resource "aws_iam_policy" "mailer_policy" {

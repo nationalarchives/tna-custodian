@@ -13,7 +13,7 @@ resource "aws_iam_role" "cloudtrail_detect_root_login_assume_role" {
 resource "aws_iam_policy" "cloudtrail_detect_root_login_policy" {
   count  = var.cloudtrail_detect_root_login == true ? 1 : 0
   name   = "${upper(var.project)}CustodianCloudtrailDetectRootLogin${title(local.environment)}"
-  policy = templatefile("./modules/iam/templates/custom/cloudtrail-detect-root-login/cloudtrail_detect_root_login_policy.json.tpl", {})
+  policy = templatefile("./modules/iam/templates/custom/cloudtrail_detect_root_login_policy.json.tpl", {})
 }
 
 resource "aws_iam_role_policy_attachment" "cloudtrail_detect_root_login_policy_attach" {

@@ -13,7 +13,7 @@ resource "aws_iam_role" "iam_access_key_warn_assume_role" {
 resource "aws_iam_policy" "iam_access_key_warn_policy" {
   count  = var.iam_access_key_warn == true ? 1 : 0
   name   = "${upper(var.project)}CustodianIamAccessKeyWarn${title(local.environment)}"
-  policy = templatefile("./modules/iam/templates/custom/iam-access-key/iam_access_key_policy.json.tpl", {})
+  policy = templatefile("./modules/iam/templates/custom/iam_access_key_policy.json.tpl", {})
 }
 
 resource "aws_iam_role_policy_attachment" "iam_access_key_warn_policy_attach" {

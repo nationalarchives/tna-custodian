@@ -17,6 +17,7 @@
         "s3:GetBucketObjectLockConfiguration",
         "s3:GetBucketPolicy",
         "s3:GetBucketPolicyStatus",
+        "s3:GetBucketPublicAccessBlock",
         "s3:GetBucketTagging",
         "s3:GetBucketVersioning",
         "s3:GetBucketWebsite",

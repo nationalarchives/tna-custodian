@@ -1,0 +1,35 @@
+policies:
+  - name: vpc-notify-no-flow-logs
+    mode:
+      type: periodic
+      schedule: "rate(1 hour)"
+      role: arn:aws:iam::{account_id}:role/CustodianMarkNoVpcFlowLogs
+    resource: aws.vpc
+    description: |
+      Notifies on VPCs without flow logs
+    filters:
+      - type: flow-logs
+        enabled: false
+      - "tag:custodian_no_vpc_flow_logs": absent
+    actions:
+      - type: notify
+        template: default.html
+        priority_header: '1'
+        subject: "{{ account }} account - VPC with no flow logs"
+        violation_desc: "VPC with no flow logs"
+        action_desc: "VPC flow logs must be configured"
+        to:
+          - {to_address}
+        transport:
+          type: sqs
+          queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer
+      - type: notify
+        slack_template: slack_default
+        violation_desc: "VPC with no flow logs"
+        action_desc: "VPC flow logs must be configured"
+        to:
+          - slack://webhook/#vpc-mark-no-flow-logs
+          - https://hooks.slack.com/services/{slack_webhook}
+        transport:
+          type: sqs
+          queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer

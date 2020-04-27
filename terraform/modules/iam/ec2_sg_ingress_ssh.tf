@@ -13,7 +13,7 @@ resource "aws_iam_role" "ec2_sg_ingress_assume_role" {
 resource "aws_iam_policy" "ec2_sg_ingress_policy" {
   count  = var.ec2_sg_ingress_ssh == true ? 1 : 0
   name   = "${upper(var.project)}CustodianEc2SgIngress${title(local.environment)}"
-  policy = templatefile("./modules/iam/templates/custom/ec2-sg-ingress/ec2_sg_ingress_policy.json.tpl", {})
+  policy = templatefile("./modules/iam/templates/custom/ec2_sg_ingress_policy.json.tpl", {})
 }
 
 resource "aws_iam_role_policy_attachment" "ec2_sg_ingress_policy_attach" {

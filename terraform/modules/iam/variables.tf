@@ -75,3 +75,28 @@ variable "s3_delete_marked" {
   description = "Deploy IAM role for S3 delete marked policy"
   default     = true
 }
+
+variable "s3_public_access" {
+  description = "Deploy IAM role for S3 public access policy"
+  default     = true
+}
+
+variable "s3_remove_public_acl" {
+  description = "Deploy IAM role for S3 remove public acl policy"
+  default     = true
+}
+
+variable "ec2_mark_no_flow_logs" {
+  description = "Deploy IAM role for VPC mark no flow logs policy"
+  default     = true
+}
+
+variable "ec2_unmark_flow_logs" {
+  description = "Deploy IAM role for VPC unmark flow logs policy"
+  default     = true
+}
+
+variable "ec2_delete_vpc" {
+  description = "Deploy IAM role for deleting marked VPC policy"
+  default     = true
+}

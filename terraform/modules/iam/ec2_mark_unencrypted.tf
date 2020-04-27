@@ -13,7 +13,7 @@ resource "aws_iam_role_policy_attachment" "ec2_mark_unencrypted_common_policy_at
 resource "aws_iam_policy" "ec2_mark_unencrypted_policy" {
   count  = var.ec2_mark_unencrypted == true ? 1 : 0
   name   = "${upper(var.project)}CustodianMarkUnencryptedEC2${title(local.environment)}"
-  policy = templatefile("./modules/iam/templates/custom/ec2-mark-unencrypted/ec2_mark_unencrypted_policy.json.tpl", {})
+  policy = templatefile("./modules/iam/templates/custom/ec2_mark_unencrypted_policy.json.tpl", {})
 }
 
 resource "aws_iam_role_policy_attachment" "ec2_mark_unencrypted_policy_attach" {
