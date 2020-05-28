@@ -8,12 +8,7 @@ policies:
     description: |
       Scans all S3 buckets for public access block and sets block if not present
     filters:
-      - or:
-          - type: check-public-block
-            BlockPublicAcls: false
-      - or:
-          - type: check-public-block
-            BlockPublicPolicy: false
+      - type: check-public-block
     actions:
       - type: notify
         template: default.html
@@ -37,5 +32,4 @@ policies:
           type: sqs
           queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer
       - type: set-public-block
-        BlockPublicAcls: true
-        BlockPublicPolicy: true
+        state: true
