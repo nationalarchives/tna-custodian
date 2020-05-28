@@ -103,5 +103,5 @@ variable "ec2_delete_vpc" {
 
 variable "s3_check_public_block" {
   description = "Deploy IAM role for S3 check public block policy"
-  default = true
+  default     = true
 }

@@ -19,7 +19,7 @@ resource "aws_iam_policy" "mailer_lambda_common_policy" {
 }
 
 resource "aws_iam_role_policy_attachment" "mailer_lambda_common_policy_attach" {
-  count  = var.mailer == true ? 1 : 0
+  count      = var.mailer == true ? 1 : 0
   role       = aws_iam_role.mailer_assume_role.*.name[0]
   policy_arn = aws_iam_policy.mailer_lambda_common_policy.*.arn[0]
 }
@@ -35,7 +35,7 @@ resource "aws_iam_policy" "mailer_policy" {
 }
 
 resource "aws_iam_role_policy_attachment" "mailer_policy_attach" {
-  count  = var.iam_mfa_warn == true ? 1 : 0
+  count      = var.iam_mfa_warn == true ? 1 : 0
   role       = aws_iam_role.mailer_assume_role.*.name[0]
   policy_arn = aws_iam_policy.mailer_policy.*.arn[0]
 }
