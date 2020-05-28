@@ -104,6 +104,6 @@ echo "Deploying notify no VPC flow logs policy to $CUSTODIAN_REGION_2"
 python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/vpc/vpc-notify-no-flow-logs.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION" --sqs_account "$SQS_ACCOUNT"
 custodian run -s logs --region="$CUSTODIAN_REGION_2" --assume="$ASSUME_ROLE" deploy.yml
 
-cho "Deploying S3 check public block"
+echo "Deploying S3 check public block"
 python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/s3/s3-check-public-block-policy.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION" --sqs_account "$SQS_ACCOUNT"
 custodian run -s logs --region="$CUSTODIAN_REGION_1" --assume="$ASSUME_ROLE" deploy.yml
