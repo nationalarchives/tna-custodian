@@ -1,0 +1,35 @@
+policies:
+  - name: s3-check-for-public-access-block
+    mode:
+      type: periodic
+      schedule: "rate(1 hour)"
+      role: arn:aws:iam::{account_id}:role/CustodianS3CheckPublicBlock
+    resource: aws.s3
+    description: |
+      Scans all S3 buckets for public access block and sets block if not present
+    filters:
+      - type: check-public-block
+    actions:
+      - type: notify
+        template: default.html
+        priority_header: '1'
+        subject: "{{ account }} account - S3 bucket Public Access Block"
+        violation_desc: "S3 bucket missing public access block"
+        action_desc: "Public access block added to S3 bucket permissions"
+        to:
+          - {to_address}
+        transport:
+          type: sqs
+          queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer
+      - type: notify
+        slack_template: slack_default
+        violation_desc: "S3 bucket missing public access block"
+        action_desc: "Public access block added to S3 bucket permissions"
+        to:
+          - slack://webhook/#s3-delete-marked
+          - https://hooks.slack.com/services/{slack_webhook}
+        transport:
+          type: sqs
+          queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer
+      - type: set-public-block
+        state: true
