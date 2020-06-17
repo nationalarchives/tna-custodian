@@ -1,3 +1,5 @@
+library("tdr-jenkinslib")
+
 pipeline {
     agent {
         label "master"
@@ -14,7 +16,7 @@ pipeline {
                 }
             }
             environment {
-                TF_VAR_tdr_account_number = getAccountNumberFromStage()
+                TF_VAR_tdr_account_number = tdr.getAccountNumberFromStage(params.STAGE)
                 //no-color option set for Terraform commands as Jenkins console unable to output the colour
                 //making output difficult to read
                 TF_CLI_ARGS = "-no-color"
@@ -86,7 +88,7 @@ pipeline {
             steps {
                 script {
                     dir("accounts") {
-                        sh "../custodian/scripts/deploy-custodian-jenkins.sh ${params.STAGE} TDR tdr-secops@nationalarchives.gov.uk ${env.MANAGEMENT_ACCOUNT} arn:aws:iam::${getAccountNumberFromStage()}:role/TDRCustodianDeployRole${params.STAGE.capitalize()}"
+                        sh "../custodian/scripts/deploy-custodian-jenkins.sh ${params.STAGE} TDR tdr-secops@nationalarchives.gov.uk ${env.MANAGEMENT_ACCOUNT} arn:aws:iam::${getAccountNumberFromStage(params.STAGE)}:role/TDRCustodianDeployRole${params.STAGE.capitalize()}"
                     }
                     slackSend(
                             color: "good",
@@ -103,14 +105,4 @@ pipeline {
             deleteDir()
         }
     }
-}
-
-def getAccountNumberFromStage() {
-    def stageToAccountMap = [
-            "intg": env.INTG_ACCOUNT,
-            "staging": env.STAGING_ACCOUNT,
-            "prod": env.PROD_ACCOUNT
-    ]
-
-    return stageToAccountMap.get(params.STAGE)
 }
