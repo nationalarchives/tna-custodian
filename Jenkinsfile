@@ -42,11 +42,12 @@ pipeline {
                         dir("terraform") {
                             echo 'Running Terraform plan...'
                             sh 'terraform plan'
-                            slackSend(
-                                    color: 'good',
-                                    message: "Terraform plan complete for ${params.STAGE.capitalize()} TDR environment. View here for plan: https://jenkins.tdr-management.nationalarchives.gov.uk/job/${JOB_NAME}/${BUILD_NUMBER}/console",
-                                    channel: '#tdr-releases'
-                            )
+                            script {
+                                tdr.postToDaTdrSlackChannel(colour: "good",
+                                                            message: "Terraform plan complete for ${params.STAGE.capitalize()} TDR environment." +
+                                                            "View here for plan: https://jenkins.tdr-management.nationalarchives.gov.uk/job/${JOB_NAME}/${BUILD_NUMBER}/console"
+                                )
+                            }
                         }
                     }
                 }
@@ -54,10 +55,12 @@ pipeline {
                     steps {
                         dir("terraform") {
                             echo 'Sending request for approval of Terraform plan...'
-                            slackSend(
-                                    color: 'good',
-                                    message: "Do you approve Terraform deployment for ${params.STAGE.capitalize()} TDR environment? jenkins.tdr-management.nationalarchives.gov.uk/job/${JOB_NAME}/${BUILD_NUMBER}/input/",
-                                    channel: '#tdr-releases')
+                            script {
+                                tdr.postToDaTdrSlackChannel(colour: "good",
+                                                            message: "Do you approve Terraform deployment for ${params.STAGE.capitalize()} TDR environment?" +
+                                                            "jenkins.tdr-management.nationalarchives.gov.uk/job/${JOB_NAME}/${BUILD_NUMBER}/input/"
+                                )
+                            }
                             input "Do you approve deployment to ${params.STAGE.capitalize()}?"
                         }
                     }
@@ -68,11 +71,11 @@ pipeline {
                             echo 'Applying Terraform changes...'
                             sh 'echo "yes" | terraform apply'
                             echo 'Changes applied'
-                            slackSend(
-                                    color: 'good',
-                                    message: "Deployment complete for ${params.STAGE.capitalize()} TDR environment",
-                                    channel: '#tdr-releases'
-                            )
+                            script {
+                                tdr.postToDaTdrSlackChannel(colour: "good"
+                                                            message: "Deployment complete for ${params.STAGE.capitalize()} TDR environment"
+                                )
+                            }
                         }
                     }
                 }
@@ -90,11 +93,11 @@ pipeline {
                     dir("accounts") {
                         sh "../custodian/scripts/deploy-custodian-jenkins.sh ${params.STAGE} TDR tdr-secops@nationalarchives.gov.uk ${env.MANAGEMENT_ACCOUNT} arn:aws:iam::${getAccountNumberFromStage(params.STAGE)}:role/TDRCustodianDeployRole${params.STAGE.capitalize()}"
                     }
-                    slackSend(
-                            color: "good",
-                            message: "Cloud Custodian deployed to ${params.STAGE.capitalize()} AWS account",
-                            channel: "#tdr-releases"
-                    )
+                    script {
+                        tdr.postToDaTdrSlackChannel(colour: "good",
+                                                    message: "Cloud Custodian deployed to ${params.STAGE.capitalize()} AWS account"
+                        )
+                    }
                 }
             }
         }
