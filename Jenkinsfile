@@ -58,7 +58,7 @@ pipeline {
                             script {
                                 tdr.postToDaTdrSlackChannel(colour: "good",
                                                             message: "Do you approve Terraform deployment for ${params.STAGE.capitalize()} TDR environment?" +
-                                                            "jenkins.tdr-management.nationalarchives.gov.uk/job/${JOB_NAME}/${BUILD_NUMBER}/input/"
+                                                            "https://jenkins.tdr-management.nationalarchives.gov.uk/job/${JOB_NAME}/${BUILD_NUMBER}/input/"
                                 )
                             }
                             input "Do you approve deployment to ${params.STAGE.capitalize()}?"
@@ -72,7 +72,7 @@ pipeline {
                             sh 'echo "yes" | terraform apply'
                             echo 'Changes applied'
                             script {
-                                tdr.postToDaTdrSlackChannel(colour: "good"
+                                tdr.postToDaTdrSlackChannel(colour: "good",
                                                             message: "Deployment complete for ${params.STAGE.capitalize()} TDR environment"
                                 )
                             }
