@@ -12,7 +12,7 @@ SQS_ACCOUNT=$(aws sts get-caller-identity | jq '.Account' | tr -d '"')
 
 echo "Configuring mailer"
 python ../custodian/scripts/build-mailer-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --from_address custodian@"$HOSTED_ZONE" --owner "$OWNER" --region "$SES_REGION"
-c7n-mailer -c deploy.yml --update-lambda
+c7n-mailer -c deploy.yml -t ../custodian/templates --update-lambda
 
 echo "Configuring Cloud Custodian to alert to SQS queue in Account $SQS_ACCOUNT"
 
