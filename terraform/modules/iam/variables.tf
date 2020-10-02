@@ -105,3 +105,8 @@ variable "s3_check_public_block" {
   description = "Deploy IAM role for S3 check public block policy"
   default     = true
 }
+
+variable "ecr_set_scan_on_push" {
+  description = "The IAM for the ECR set scan on push policy"
+  default     = true
+}
