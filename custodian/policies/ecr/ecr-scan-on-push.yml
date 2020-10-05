@@ -1,0 +1,35 @@
+policies:
+  - name: ecr-vulnerability-scanning-enabled
+    resource: ecr
+    mode:
+      type: periodic
+      role: arn:aws:iam::{account_id}:role/CustodianECRSetScanOnPush
+      schedule: "rate(1 day)"
+    filters:
+      - type: value
+        key: imageScanningConfiguration.scanOnPush
+        value: false
+    actions:
+      - type: notify
+        template: default.html
+        priority_header: '1'
+        subject: "Repository configured without scan on push"
+        violation_desc: "ECR alert"
+        action_desc: "Repository has had scan on push enabled"
+        to:
+          - {to_address}
+        transport:
+          type: sqs
+          queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer
+      - type: notify
+        slack_template: slack_ecr
+        violation_desc: "Repository configured without scan on push"
+        action_desc: "Repository has had scan on push enabled"
+        to:
+          - slack://webhook/#ecr-scan-on-push
+          - https://hooks.slack.com/services/{slack_webhook}
+        transport:
+          type: sqs
+          queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer
+      - type: set-scanning
+        state: true
