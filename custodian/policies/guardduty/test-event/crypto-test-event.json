@@ -3,24 +3,24 @@
   "id": "1c1ef4fd-8405-c87a-d65d-015d332619f6",
   "detail-type": "GuardDuty Finding",
   "source": "aws.guardduty",
-  "account": "012345678901",
+  "account": "some_account_id",
   "time": "2020-04-20T14:45:06Z",
   "region": "eu-west-2",
   "resources": [],
   "detail": {
     "schemaVersion": "2.0",
-    "accountId": "012345678901",
+    "accountId": "some_account_id",
     "region": "eu-west-2",
     "partition": "aws",
     "id": "d8b8cbf6ed25f5adc5491ee4dd24a92b",
-    "arn": "arn:aws:guardduty:eu-west-2:012345678901:detector/abcdefg01234567890abcdefg01234567890/finding/d8b8cbf6ed25f5adc5491ee4dd24a92b",
+    "arn": "arn:aws:guardduty:eu-west-2:some_account_id:detector/abcdefg01234567890abcdefg01234567890/finding/d8b8cbf6ed25f5adc5491ee4dd24a92b",
     "type": "CryptoCurrency:EC2/BitcoinTool.B",
     "resource": {
       "resourceType": "Instance",
       "instanceDetails": {
         "instanceId": "i-99999999",
         "instanceType": "m3.xlarge",
-        "outpostArn": "arn:aws:outposts:us-west-2:123456789000:outpost/op-0fbc006e9abbc73c3",
+        "outpostArn": "arn:aws:outposts:us-west-2:some_account_id:outpost/op-0fbc006e9abbc73c3",
         "launchTime": "2016-08-02T02:05:06Z",
         "platform": null,
         "productCodes": [
