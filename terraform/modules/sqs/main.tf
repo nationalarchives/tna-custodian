@@ -17,5 +17,5 @@ resource "aws_sqs_queue" "custodian_mailer_queue" {
 resource "aws_sqs_queue_policy" "multi_account" {
   count     = var.project == "tdr" && local.environment == "mgmt" ? 1 : 0
   queue_url = aws_sqs_queue.custodian_mailer_queue.*.id[0]
-  policy = templatefile("./modules/sqs/templates/multi_account.json.tpl", { queue_arn = aws_sqs_queue.custodian_mailer_queue.*.arn[0], external_account_1 = data.aws_ssm_parameter.intg_account_number.*.value[0], external_account_2 = data.aws_ssm_parameter.staging_account_number.*.value[0], external_account_3 = data.aws_ssm_parameter.prod_account_number.*.value[0] })
+  policy    = templatefile("./modules/sqs/templates/multi_account.json.tpl", { queue_arn = aws_sqs_queue.custodian_mailer_queue.*.arn[0], external_account_1 = data.aws_ssm_parameter.intg_account_number.*.value[0], external_account_2 = data.aws_ssm_parameter.staging_account_number.*.value[0], external_account_3 = data.aws_ssm_parameter.prod_account_number.*.value[0] })
 }
