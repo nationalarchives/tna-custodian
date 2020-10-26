@@ -3,7 +3,7 @@
   "id": "6f87d04b-9f74-4f04-a780-7acf4b0a9b38",
   "detail-type": "AWS Console Sign In via CloudTrail",
   "source": "aws.signin",
-  "account": "123456789012",
+  "account": "some_account_id",
   "time": "2016-01-05T18:21:27Z",
   "region": "us-east-1",
   "resources": [],
@@ -12,8 +12,8 @@
     "userIdentity": {
       "type": "Root",
       "principalId": "123456789012",
-      "arn": "arn:aws:iam::123456789012:root",
-      "accountId": "123456789012"
+      "arn": "arn:aws:iam::some_account_id:root",
+      "accountId": "some_account_id"
     },
     "eventTime": "2016-01-05T18:21:27Z",
     "eventSource": "signin.amazonaws.com",
