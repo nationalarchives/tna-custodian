@@ -11,7 +11,7 @@
     "eventVersion": "1.02",
     "userIdentity": {
       "type": "Root",
-      "principalId": "123456789012",
+      "principalId": "some_principal_id",
       "arn": "arn:aws:iam::some_account_id:root",
       "accountId": "some_account_id"
     },
