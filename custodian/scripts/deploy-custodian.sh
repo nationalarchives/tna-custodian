@@ -9,7 +9,7 @@ CUSTODIAN_REGION_1="eu-west-2"
 CUSTODIAN_REGION_2="eu-west-1"
 SES_REGION="eu-west-2"
 SQS_ACCOUNT=$(aws sts get-caller-identity | jq '.Account' | tr -d '"')
-SUBNETS=$(aws ec2 describe-subnets | jq '[.Subnets[].SubnetId]')
+SUBNETS=$(aws ec2 describe-subnets --filters Name=tag:Name,Values=*-private-* | jq '[.Subnets[].SubnetId]')
 SECURITY_GROUPS=$(aws ec2 describe-security-groups | jq '[.SecurityGroups[].GroupId]')
 
 echo "Configuring mailer"
