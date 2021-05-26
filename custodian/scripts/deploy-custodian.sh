@@ -2,6 +2,8 @@
 OWNER=$1
 ENVIRONMENT=$2
 TO_ADDRESS=$3
+SUBNETS=$4
+SECURITY_GROUPS=$5
 COST_CENTRE=$(aws ssm get-parameter --name /mgmt/cost_centre | jq '.Parameter.Value' | tr -d '"')
 SLACK_WEBHOOK=$(aws ssm get-parameter --name /mgmt/slack/webhook | jq '.Parameter.Value' | tr -d '"')
 HOSTED_ZONE=$(aws route53 list-hosted-zones --max-items 1 | jq '.HostedZones[0].Name' | tr -d '"' | sed 's/.$//')
@@ -9,8 +11,6 @@ CUSTODIAN_REGION_1="eu-west-2"
 CUSTODIAN_REGION_2="eu-west-1"
 SES_REGION="eu-west-2"
 SQS_ACCOUNT=$(aws sts get-caller-identity | jq '.Account' | tr -d '"')
-SUBNETS=$(aws ec2 describe-subnets --filters Name=tag:Name,Values=*-private-* | jq '[.Subnets[].SubnetId]')
-SECURITY_GROUPS=$(aws ec2 describe-security-groups | jq '[.SecurityGroups[].GroupId]')
 
 echo "Configuring mailer"
 python ../custodian/scripts/build-mailer-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --from_address custodian@"$HOSTED_ZONE" --owner "$OWNER" --region "$SES_REGION"
@@ -111,7 +111,7 @@ python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --e
 custodian run -s logs --region="$CUSTODIAN_REGION_2" deploy.yml
 
 echo "Deploying S3 check public block"
-python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/s3/s3-check-public-block-policy.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION" --subnets="$SUBNETS" --security_groups="$SECURITY_GROUPS"
+python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/s3/s3-check-public-block-policy.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION" --subnets "$SUBNETS" --security_groups "$SECURITY_GROUPS"
 custodian run -s logs --region="$CUSTODIAN_REGION_1" deploy.yml
 
 echo "Deploying ECR check scan on push block"

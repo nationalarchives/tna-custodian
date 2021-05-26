@@ -4,8 +4,6 @@ policies:
       type: periodic
       schedule: "rate(1 hour)"
       role: arn:aws:iam::{account_id}:role/CustodianS3CheckPublicBlock
-      subnets: {subnets}
-      security_groups: {security_groups}
     resource: aws.s3
     description: |
       Scans all S3 buckets for public access block and sets block if not present
