@@ -11,7 +11,7 @@ pipeline {
         stage('Run Terraform build') {
             agent {
                 ecs {
-                    inheritFrom 'terraform'
+                    inheritFrom 'terraform-v13'
                     taskrole "arn:aws:iam::${env.MANAGEMENT_ACCOUNT}:role/TDRTerraformAssumeRole${params.STAGE.capitalize()}"
                 }
             }
@@ -41,6 +41,11 @@ pipeline {
                     steps {
                         dir("terraform") {
                             echo 'Running Terraform plan...'
+                            //Require reinitialization of Terraform after workspace is selected when upgrading from v12 to v13
+                            //See this thread for details of the issue: https://discuss.hashicorp.com/t/terraform-v0-13-failed-to-instantiate-provider-for-every-project/16522/9
+                            //This step should not be necessary when upgrading from v13 upwards
+                            sh 'terraform init'
+
                             sh 'terraform plan'
                             script {
                                 tdr.postToDaTdrSlackChannel(colour: "good",
