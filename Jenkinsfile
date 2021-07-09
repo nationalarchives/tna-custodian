@@ -11,7 +11,7 @@ pipeline {
         stage('Run Terraform build') {
             agent {
                 ecs {
-                    inheritFrom 'terraform-v13'
+                    inheritFrom 'terraform'
                     taskrole "arn:aws:iam::${env.MANAGEMENT_ACCOUNT}:role/TDRTerraformAssumeRole${params.STAGE.capitalize()}"
                 }
             }
