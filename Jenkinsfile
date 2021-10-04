@@ -2,7 +2,7 @@ library("tdr-jenkinslib")
 
 pipeline {
     agent {
-        label "master"
+        label "built-in"
     }
     parameters {
         choice(name: "STAGE", choices: ["intg", "staging", "prod"], description: "AWS account being configured")
