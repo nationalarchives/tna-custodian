@@ -5,8 +5,8 @@ locals {
     {
       "Environment" = local.environment,
       "Owner"       = upper(var.project),
-      "Terraform"   =  true,
-      "CostCentre" = module.global_parameters.cost_centre
+      "Terraform"   = true,
+      "CostCentre"  = module.global_parameters.cost_centre
     }
   )
 }
