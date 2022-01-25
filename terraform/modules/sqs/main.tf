@@ -8,8 +8,10 @@ resource "aws_sqs_queue" "custodian_mailer_queue" {
   kms_master_key_id         = var.kms_master_key_id
   tags = merge(
     var.common_tags,
-    map(
-      "Name", "custodian-mailer",
+    tomap(
+      {
+        "Name" = "custodian-mailer"
+      }
     )
   )
 }

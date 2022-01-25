@@ -28,7 +28,7 @@
 ## USAGE
 
 ### Prerequisites
-* Terraform 13.x
+* Terraform 1.x.x
 * Python 3.x
 * AWS CLI
 * Boto3
