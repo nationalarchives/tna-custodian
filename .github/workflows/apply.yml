@@ -14,7 +14,7 @@ jobs:
   apply:
     uses: nationalarchives/tdr-github-actions/.github/workflows/terraform_apply.yml@main
     with:
-      repo-name: tdr-aws-accounts
+      repo-name: tna-custodian
       environment: ${{ github.event.inputs.environment }}
       working-directory: terraform
     secrets:
