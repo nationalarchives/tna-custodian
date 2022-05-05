@@ -12,6 +12,7 @@ permissions:
   contents: write
 jobs:
   apply:
+    if: ${{ false }}
     uses: nationalarchives/tdr-github-actions/.github/workflows/terraform_apply.yml@use-working-directory-for-apply
     with:
       repo-name: tna-custodian
@@ -45,5 +46,6 @@ jobs:
           aws-region: eu-west-2
           role-session-name: CustodianRole
       - run: |
+          pip install ruamel.yaml c7n c7n-mailer c7n-guardian --ignore-installed six
           cd accounts
           ../custodian/scripts/deploy-custodian.sh TDR ${{ github.event.inputs.environment }} tdr-secops@nationalarchives.gov.uk
