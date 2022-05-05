@@ -1,0 +1,50 @@
+name: 'Terraform apply'
+on:
+  push:
+  workflow_dispatch:
+    inputs:
+      environment:
+        required: true
+        description: The environment to deploy against.
+        type: string
+        default: intg
+permissions:
+  id-token: write
+  contents: write
+jobs:
+  apply:
+    uses: nationalarchives/tdr-github-actions/.github/workflows/terraform_apply.yml@main
+    with:
+      repo-name: tdr-aws-accounts
+      environment: ${{ github.event.inputs.environment }}
+      working-directory: terraform
+    secrets:
+      MANAGEMENT_ACCOUNT: ${{ secrets.MANAGEMENT_ACCOUNT }}
+      WORKFLOW_PAT: ${{ secrets.WORKFLOW_PAT }}
+      ACCOUNT_NUMBER: ${{ secrets.ACCOUNT_NUMBER }}
+      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+      INTG_ACCOUNT_NUMBER: ${{ secrets.INTG_ACCOUNT_NUMBER }}
+      STAGING_ACCOUNT_NUMBER: ${{ secrets.STAGING_ACCOUNT_NUMBER }}
+      PROD_ACCOUNT_NUMBER: ${{ secrets.PROD_ACCOUNT_NUMBER }}
+  custodian:
+    environment: ${{ github.event.inputs.environment }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          token: ${{ secrets.WORKFLOW_PAT }}
+      - id: set-environment-names
+        run: |
+          env = "${{ github.event.inputs.environment }}"
+          print(f"::set-output name=title-environment::{env.title()}")
+        shell: python
+      - name: Configure AWS credentials for Lambda
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_NUMBER }}:role/TDRGithubActionsCustodianDeployRole${{ steps.set-environment-names.outputs.title-environment }}
+          aws-region: eu-west-2
+          role-session-name: CustodianRole
+      - run: |
+          cd accounts
+          ../custodian/scripts/deploy-custodian.sh TDR ${{ github.event.inputs.environment }} tdr-secops@nationalarchives.gov.uk

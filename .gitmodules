@@ -1,0 +1,3 @@
+[submodule "tdr-configurations"]
+	path = tdr-configurations
+	url = https://github.com/nationalarchives/tdr-configurations.git
