@@ -1,6 +1,5 @@
 name: 'Terraform apply'
 on:
-  push:
   workflow_dispatch:
     inputs:
       environment:
