@@ -4,7 +4,7 @@
 * This implementation of Cloud Custodian includes the following alerts and automated remediations:
 
 | AWS SERVICE | RULE NAME                     | CONDITION                                                   | REMEDIATION                 |
-| ----------- | ----------------------------- | ----------------------------------------------------------- | --------------------------- |
+| ----------- |-------------------------------|-------------------------------------------------------------| --------------------------- |
 | CloudTrail  | Detect-root-login             | Root user logs in to AWS Console                            | None                        | 
 | EC2         | SG-ingress                    | Security group with inbound from any, except HTTP and HTTPS | Remove security group rule  | 
 | EC2         | Mark-unencrypted              | EC2 virtual machine not encrypted                           | Mark for deletion in 3 days | 
@@ -17,7 +17,10 @@
 | IAM         | MFA-warn                      | Console user without MFA                                    | None                        |
 | S3          | Mark-unencrypted              | S3 bucket not encrypted                                     | Mark for deletion in 3 days | 
 | S3          | Unmark-encrypted              | Previously marked S3 bucket now encrypted                   | Remove mark                 | 
-| S3          | Delete-marked-unencrypted     | Marked S3 bucket date condition met                         | Terminate instance          | 
+| S3          | Delete-marked-unencrypted     | Marked S3 bucket date condition met                         | Terminate instance          |
+| S3          | Mark-missing-ssl              | S3 bucket missing SSL only policy                           | Mark for deletion in 3 days | 
+| S3          | Unmark-has-ssl                | Previously marked S3 bucket now has SSL only policy         | Remove mark                 | 
+| S3          | Delete-marked-missing-ssl     | Marked S3 bucket date condition met                         | Terminate instance          |
 | S3          | Remove-public-acls            | Public ACLs at S3 bucket level                              | Remove public ACLs          | 
 | S3          | Mark-public-policy            | S3 bucket with public policy                                | Mark for deletion in 3 days | 
 | S3          | Unmark-public-policy          | Previously marked S3 bucket no longer public                | Remove mark                 | 
@@ -106,9 +109,9 @@ The steps below define the process for testing the policy in the TDR management 
      python ... etc ...
      custodian run --dryrun -s logs --region="$CUSTODIAN_REGION_1" deploy.yml
      ```
-2. In the python virtual environment run the following command from the ./custodian/accounts directory: 
+2. In the python virtual environment run the following command from the ./custodian/accounts directory, replacing the management_account_number placeholder: 
      ```
-     (custodian) [xxxx@localhost accounts]$ ./tdr-mgmt-deploy.sh
+     (custodian) [xxxx@localhost accounts]$ ./tdr-mgmt-deploy.sh ${management_account_number}
      ```
 3. Go to the relevant generated log directory (./accounts/logs/[policy name]) for the new Cloud Custodian policy and check the "resources.json" contains the correct AWS resources identified by the new policy.
 4. Repeat steps as required until the new Cloud Custodian policy is correctly identifying the AWS resources
@@ -124,9 +127,9 @@ Note: Testing may highlight issues with IAM roles/policies for the Cloud Custodi
      custodian run -s logs --region="$CUSTODIAN_REGION_1" deploy.yml
      ```
      **NOTE**: without the "dry run" option the remediation actions (if any) of the new policy will be implemented for any identified AWS resources in the AWS TDR management account.
-2. In the python virtual environment run the following command from the ./custodian/accounts directory:
+2. In the python virtual environment run the following command from the ./custodian/accounts directory, replacing the ${management_account_number} placholder:
    ```
-   (custodian) [xxxx@localhost accounts]$ ./tdr-mgmt-deploy.sh
+   (custodian) [xxxx@localhost accounts]$ ./tdr-mgmt-deploy.sh ${management_account_number}
    ```
 3. The new Cloud Custodian policy should be deployed to the TDR management account
 4. To test the deployment without having to wait for the periodic run/trigger event for the new policy, the policy lambda can be run by using the test service on the AWS console.
@@ -140,10 +143,10 @@ Note: Testing may highlight issues with IAM roles/policies for the Cloud Custodi
 
 ### Deploy in other TNA accounts
 * Pass in the terraform backend via the command line
-* Set terraform variable for project, e.g. ```project = "tna"```
-* Set terraform variable ```assume_tdr_role = false```
-* Copy accounts/tdr-mgmt-deploy.sh, rename file and update variables as appropriate
-* Deploy terraform and then run the shell script to deploy Cloud Custodian 
+* Set terraform variable for `tdr_account_number` to the account you're deploying to.
+* Set the terraform workspace to the environment you're deploying to.
+* Deploy terraform
+* Run `./tdr-mgmt-deploy.sh ${management_account_number}` with credentials for the account you are deploying to.
 
 ### Destroy Cloud Custodian
 * Destroy Cloud Custodian resources

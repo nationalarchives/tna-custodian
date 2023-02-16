@@ -1,22 +1,23 @@
 policies:
-  - name: s3-mark-unencrypted
+  - name: s3-mark-missing-ssl-policy
     mode:
       type: periodic
       schedule: "rate(1 hour)"
-      role: arn:aws:iam::{account_id}:role/CustodianMarkUnencryptedS3
+      role: arn:aws:iam::{account_id}:role/CustodianMarkMissingSSLPolicyS3
     resource: aws.s3
     description: |
-      Scans all S3 buckets and marks unencrypted buckets for deletion
+      Scans all S3 buckets and marks buckets missing an AllowSSLRequestsOnly for deletion
     filters:
-      - type: bucket-encryption
-        state: False
-      - "tag:custodian_s3_not_encrypted": absent
+      - type: missing-statement
+        statement_ids:
+          - AllowSSLRequestsOnly
+      - "tag:custodian_s3_missing_ssl": absent
     actions:
       - type: notify
         template: default.html
         priority_header: '1'
-        subject: "{{ account }} account - marked unencrypted S3 bucket for deletion"
-        violation_desc: "Unencrypted S3 bucket"
+        subject: "{{ account }} account - marked missing SSL policy S3 bucket for deletion"
+        violation_desc: "S3 bucket with missing AllowSSLRequestsOnly policy"
         action_desc: "Marked S3 bucket for deletion in 3 days"
         to:
           - {to_address}
@@ -25,15 +26,15 @@ policies:
           queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer
       - type: notify
         slack_template: slack_default
-        violation_desc: "Unencrypted S3 bucket"
+        violation_desc: "S3 bucket with missing AllowSSLRequestsOnly policy"
         action_desc: "Marked S3 bucket for deletion in 3 days"
         to:
-          - slack://webhook/#s3-mark-unencrypted
+          - slack://webhook/#s3-mark-missing-ssl
           - {slack_webhook}
         transport:
           type: sqs
           queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer
       - type: mark-for-op
-        tag: custodian_s3_not_encrypted
+        tag: custodian_s3_missing_ssl
         op: delete
         days: 3

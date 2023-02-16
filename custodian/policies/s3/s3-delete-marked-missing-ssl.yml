@@ -1,15 +1,15 @@
 policies:
-  - name: s3-delete-marked-public-policy
+  - name: s3-delete-marked-missing-ssl-policy
     mode:
       type: periodic
       schedule: "rate(1 day)"
       role: arn:aws:iam::{account_id}:role/CustodianDeleteMarkedS3
     resource: aws.s3
     description: |
-      Delete public S3 buckets scheduled for deletion
+      S3 buckets missing SSL policy scheduled for deletion
     filters:
       - type: marked-for-op
-        tag: custodian_s3_public_access
+        tag: custodian_s3_missing_ssl
         op: delete
     actions:
       - type: notify

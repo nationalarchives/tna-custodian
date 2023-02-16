@@ -27,7 +27,7 @@ policies:
         action_desc: "Public access block added to S3 bucket permissions"
         to:
           - slack://webhook/#s3-delete-marked
-          - https://hooks.slack.com/services/{slack_webhook}
+          - {slack_webhook}
         transport:
           type: sqs
           queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer

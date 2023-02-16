@@ -39,7 +39,7 @@ policies:
         action_desc: "S3 bucket will no longer be deleted"
         to:
           - slack://webhook/#s3-public-access
-          - https://hooks.slack.com/services/{slack_webhook}
+          - {slack_webhook}
         transport:
           type: sqs
           queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer

@@ -38,7 +38,7 @@ policies:
         action_desc: "Marked S3 bucket for deletion in 3 days"
         to:
           - slack://webhook/#s3-mark-public-policy
-          - https://hooks.slack.com/services/{slack_webhook}
+          - {slack_webhook}
         transport:
           type: sqs
           queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer

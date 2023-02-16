@@ -32,7 +32,7 @@ policies:
         action_desc: 'Investigate root user login and revoke credentials if needed'
         to:
           - slack://webhook/#detect-root-login
-          - https://hooks.slack.com/services/{slack_webhook}
+          - {slack_webhook}
         transport:
           type: sqs
           queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer
