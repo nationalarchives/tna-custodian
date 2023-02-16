@@ -73,7 +73,7 @@ echo "Deploying mark unencrypted S3 bucket policy"
 python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/s3/s3-mark-unencrypted.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION" --sqs_account "$SQS_ACCOUNT"
 custodian run -s logs --region="$CUSTODIAN_REGION_1" deploy.yml
 
-echo "Deploying mark missing SSL S3 bucket policy"
+echo "Deploying check missing SSL S3 bucket policy"
 python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/s3/s3-check-missing-ssl.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION" --sqs_account "$SQS_ACCOUNT"
 custodian run -s logs --region="$CUSTODIAN_REGION_1" deploy.yml
 
