@@ -1,9 +1,9 @@
 policies:
-  - name: s3-mark-missing-ssl-policy
+  - name: s3-check-missing-ssl-policy
     mode:
       type: periodic
       schedule: "rate(1 hour)"
-      role: arn:aws:iam::{account_id}:role/CustodianMarkMissingSSLPolicyS3
+      role: arn:aws:iam::{account_id}:role/CustodianCheckMissingSSLPolicyS3
     resource: aws.s3
     description: |
       Scans all S3 buckets and marks buckets missing an AllowSSLRequestsOnly for deletion
@@ -11,14 +11,13 @@ policies:
       - type: missing-statement
         statement_ids:
           - AllowSSLRequestsOnly
-      - "tag:custodian_s3_missing_ssl": absent
     actions:
       - type: notify
         template: default.html
         priority_header: '1'
-        subject: "{{ account }} account - marked missing SSL policy S3 bucket for deletion"
+        subject: "{{ account }} account - found missing SSL policy S3 bucket"
         violation_desc: "S3 bucket with missing AllowSSLRequestsOnly policy"
-        action_desc: "Marked S3 bucket for deletion in 3 days"
+        action_desc: "Applied AllowSSLRequestsOnly policy to the bucket"
         to:
           - {to_address}
         transport:
@@ -27,14 +26,23 @@ policies:
       - type: notify
         slack_template: slack_default
         violation_desc: "S3 bucket with missing AllowSSLRequestsOnly policy"
-        action_desc: "Marked S3 bucket for deletion in 3 days"
+        action_desc: "Applied AllowSSLRequestsOnly policy to the bucket"
         to:
           - slack://webhook/#s3-mark-missing-ssl
           - {slack_webhook}
         transport:
           type: sqs
           queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer
-      - type: mark-for-op
-        tag: custodian_s3_missing_ssl
-        op: delete
-        days: 3
+      - type: set-statements
+        statements:
+          - Sid: "AllowSSLRequestsOnly"
+            Effect: "Deny"
+            Action: "s3:*"
+            Principal:
+              AWS: "*"
+            Resource:
+              - "arn:aws:s3:::{bucket_name}/*"
+              - "arn:aws:s3:::{bucket_name}"
+            Condition:
+              Bool:
+                "aws:SecureTransport": false

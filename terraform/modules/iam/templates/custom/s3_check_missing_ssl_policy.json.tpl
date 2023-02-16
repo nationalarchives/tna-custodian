@@ -20,7 +20,8 @@
         "s3:ListAllMyBuckets",
         "s3:ListBucket",
         "s3:ListBucketVersions",
-        "s3:PutBucketTagging"
+        "s3:PutBucketTagging",
+        "s3:PutBucketPolicy"
       ],
       "Resource": "*"
     }
