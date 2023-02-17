@@ -27,7 +27,7 @@ policies:
         action_desc: "Repository has had scan on push enabled"
         to:
           - slack://webhook/#ecr-scan-on-push
-          - https://hooks.slack.com/services/{slack_webhook}
+          - {slack_webhook}
         transport:
           type: sqs
           queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer

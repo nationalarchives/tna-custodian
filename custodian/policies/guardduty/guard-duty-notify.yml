@@ -28,7 +28,7 @@ policies:
         action_desc: "Investigate and take action as needed"
         to:
           - slack://webhook/#guard-duty-notify
-          - https://hooks.slack.com/services/{slack_webhook}
+          - {slack_webhook}
         transport:
           type: sqs
           queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer

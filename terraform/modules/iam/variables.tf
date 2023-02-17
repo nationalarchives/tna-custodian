@@ -71,6 +71,11 @@ variable "s3_unmark_encrypted" {
   default     = true
 }
 
+variable "s3_check_missing_ssl" {
+  description = "Deploy IAM role for S3 missing SSL policy"
+  default     = true
+}
+
 variable "s3_delete_marked" {
   description = "Deploy IAM role for S3 delete marked policy"
   default     = true

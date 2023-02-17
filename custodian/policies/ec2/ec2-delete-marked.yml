@@ -29,7 +29,7 @@ policies:
         action_desc: "Terminated EC2 instance after specified time"
         to:
           - slack://webhook/#ec2-delete-marked
-          - https://hooks.slack.com/services/{slack_webhook}
+          - {slack_webhook}
         transport:
           type: sqs
           queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer

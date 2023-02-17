@@ -48,7 +48,7 @@ jobs:
       - run: |
           pip install ruamel.yaml c7n c7n-mailer c7n-guardian --ignore-installed six
           cd accounts
-          ../custodian/scripts/deploy-custodian.sh TDR ${{ github.event.inputs.environment }} tdr-secops@nationalarchives.gov.uk
+          ../custodian/scripts/deploy-custodian.sh TDR ${{ github.event.inputs.environment }} tdr-secops@nationalarchives.gov.uk ${{ secrets.MANAGEMENT_ACCOUNT }}
       - uses: nationalarchives/tdr-github-actions/.github/actions/slack-send@main
         with:
           message: |
