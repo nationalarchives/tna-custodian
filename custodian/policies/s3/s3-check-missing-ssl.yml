@@ -6,7 +6,7 @@ policies:
       role: arn:aws:iam::{account_id}:role/CustodianCheckMissingSSLPolicyS3
     resource: aws.s3
     description: |
-      Scans all S3 buckets and marks buckets missing an AllowSSLRequestsOnly for deletion
+      Scans all S3 buckets and adds the AllowSSLRequestsOnly policy if it's missing
     filters:
       - type: missing-statement
         statement_ids:
