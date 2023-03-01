@@ -42,7 +42,7 @@ jobs:
             print(f"title-environment={env.title()}", file=fh)
         shell: python
       - name: Configure AWS credentials for Lambda
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v1-node16
         with:
           role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_NUMBER }}:role/TDRGithubActionsCustodianDeployRole${{ steps.set-environment-names.outputs.title-environment }}
           aws-region: eu-west-2
