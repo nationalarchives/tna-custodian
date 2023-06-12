@@ -7,25 +7,46 @@ on:
         description: The environment to deploy against.
         type: string
         default: intg
+      project:
+        required: true
+        description: The project to run this for
+        type: choice
+        options:
+          - tdr
+          - dr2
 permissions:
   id-token: write
   contents: write
 jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      environment-upper: ${{ steps.set-environment-names.outputs.environment_upper }}
+    steps:
+      - id: set-environment-names
+        run: |
+          import os
+          project = "${{ github.event.inputs.project }}"
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
+            print(f"environment_upper={project.upper()}", file=fh)
+
+        shell: python
   apply:
-    uses: nationalarchives/tdr-github-actions/.github/workflows/terraform_apply.yml@main
+    uses: nationalarchives/${{ github.event.inputs.project }}-github-actions/.github/workflows/terraform_apply.yml@main
+    needs: setup
     with:
       repo-name: tna-custodian
-      environment: ${{ github.event.inputs.environment }}
+      environment: ${{ github.event.inputs.project }}-${{ github.event.inputs.environment }}
       working-directory: terraform
     secrets:
-      MANAGEMENT_ACCOUNT: ${{ secrets.MANAGEMENT_ACCOUNT }}
-      WORKFLOW_PAT: ${{ secrets.WORKFLOW_PAT }}
-      ACCOUNT_NUMBER: ${{ secrets.ACCOUNT_NUMBER }}
-      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-      INTG_ACCOUNT_NUMBER: ${{ secrets.INTG_ACCOUNT_NUMBER }}
-      STAGING_ACCOUNT_NUMBER: ${{ secrets.STAGING_ACCOUNT_NUMBER }}
-      PROD_ACCOUNT_NUMBER: ${{ secrets.PROD_ACCOUNT_NUMBER }}
-      SANDBOX_ACCOUNT_NUMBER: ${{ secrets.SANDBOX_ACCOUNT_NUMBER }}
+      MANAGEMENT_ACCOUNT: ${{ secrets[format('{0}_MANAGEMENT_ACCOUNT', needs.setup.outputs.project-upper)] }}
+      WORKFLOW_PAT: ${{ secrets[format('{0}_WORKFLOW_PAT', needs.setup.outputs.project-upper)] }}
+      ACCOUNT_NUMBER: ${{ secrets[format('{0}_ACCOUNT_NUMBER', needs.setup.outputs.project-upper)] }}
+      SLACK_WEBHOOK: ${{ secrets[format('{0}_SLACK_WEBHOOK', needs.setup.outputs.project-upper)] }}
+      INTG_ACCOUNT_NUMBER: ${{ secrets[format('{0}_INTG_ACCOUNT_NUMBER', needs.setup.outputs.project-upper)] }}
+      STAGING_ACCOUNT_NUMBER: ${{ secrets[format('{0}_STAGING_ACCOUNT_NUMBER', needs.setup.outputs.project-upper)] }}
+      PROD_ACCOUNT_NUMBER: ${{ secrets[format('{0}_PROD_ACCOUNT_NUMBER', needs.setup.outputs.project-upper)] }}
+      SANDBOX_ACCOUNT_NUMBER: ${{ secrets[format('{0}_SANDBOX_ACCOUNT_NUMBER', needs.setup.outputs.project-upper)] }}
   custodian:
     environment: ${{ github.event.inputs.environment }}
     runs-on: ubuntu-latest
@@ -38,19 +59,26 @@ jobs:
         run: |
           import os
           env = "${{ github.event.inputs.environment }}"
+          project = "${{ github.event.inputs.project }}"
           with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
-            print(f"title-environment={env.title()}", file=fh)
+            print(f"project-upper={project.upper()}", file=fh)
+            if project == "tdr":
+              print(f"role-name=TDRGithubActionsCustodianDeployRole{env.title()}", file=fh)
+              print(f"email=tdr-secops@nationalarchives.gov.uk", file=fh)
+            else if project == "dr2":
+              print(f"role-name={env.title()}DR2GithubActionsCustodianDeployRole", file=fh)
+              print(f"email=da_dp_mgmt@nationalarchives.gov.uk", file=fh)
         shell: python
       - name: Configure AWS credentials for Lambda
         uses: aws-actions/configure-aws-credentials@v1-node16
         with:
-          role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_NUMBER }}:role/TDRGithubActionsCustodianDeployRole${{ steps.set-environment-names.outputs.title-environment }}
+          role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_NUMBER }}:role/${{ steps.set-environment-names.outputs.role-name }}
           aws-region: eu-west-2
           role-session-name: CustodianRole
       - run: |
           pip install ruamel.yaml c7n c7n-mailer c7n-guardian --ignore-installed six
           cd accounts
-          ../custodian/scripts/deploy-custodian.sh TDR ${{ github.event.inputs.environment }} tdr-secops@nationalarchives.gov.uk ${{ secrets.MANAGEMENT_ACCOUNT }}
+          ../custodian/scripts/deploy-custodian.sh ${{ steps.set-environment-names.outputs.project-upper }} ${{ github.event.inputs.environment }} ${{ steps.set-environment-names.outputs.role-name }} ${{ secrets[format('{0}_MANAGEMENT_ACCOUNT', steps.set-environment-names.outputs.project-upper)] }}
       - uses: nationalarchives/tdr-github-actions/.github/actions/slack-send@main
         with:
           message: |
