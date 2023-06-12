@@ -34,7 +34,7 @@ jobs:
       STAGING_ACCOUNT_NUMBER: ${{ secrets.TDR_STAGING_ACCOUNT_NUMBER }}
       PROD_ACCOUNT_NUMBER: ${{ secrets.TDR_PROD_ACCOUNT_NUMBER }}
   apply_dr2:
-    uses: nationalarchives/dr2-github-actions/.github/workflows/terraform_apply.yml@dr2-github-actions
+    uses: nationalarchives/dr2-github-actions/.github/workflows/terraform_apply.yml@temp-branch
     if: github.event.inputs.project == 'dr2'
     with:
       repo-name: tna-custodian
