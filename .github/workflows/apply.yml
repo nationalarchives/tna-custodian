@@ -34,7 +34,7 @@ jobs:
           project = "${{ github.event.inputs.project }}"
           with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
             print(f"title_environment={env.title()}", file=fh)
-            print(f"account_number_secret={}{env.upper()}_ACCOUNT_NUMBER", file=fh)
+            print(f"account_number_secret={project.upper()}_{env.upper()}_ACCOUNT_NUMBER", file=fh)
             if project == "tdr":
               print(f"role_name=TDRGithubTerraformAssumeRole{env.title()}", file=fh)
               print(f"state_bucket=tdr-terraform-state", file=fh)              
@@ -55,7 +55,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: recursive
-          token: ${{ secrets[format('{0}_WORKFLOW_TOKEN', steps.set-environment-names.outputs.project-upper)] }}
+          token: ${{ secrets[format('{0}_WORKFLOW_PAT', steps.set-environment-names.outputs.project-upper)] }}
       - name: Configure AWS credentials for Lambda
         uses: aws-actions/configure-aws-credentials@v1-node16
         with:
@@ -98,7 +98,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: recursive
-          token: ${{ secrets[format('{0}_WORKFLOW_TOKEN', steps.set-environment-names.outputs.project-upper)] }}
+          token: ${{ secrets[format('{0}_WORKFLOW_PAT', steps.set-environment-names.outputs.project-upper)] }}
       - name: Configure AWS credentials for Lambda
         uses: aws-actions/configure-aws-credentials@v1-node16
         with:
@@ -111,7 +111,7 @@ jobs:
       - name: Run apply
         env:
           GITHUB_OWNER: nationalarchives
-          GITHUB_TOKEN: ${{ secrets[format('{0}_WORKFLOW_TOKEN', steps.set-environment-names.outputs.project-upper)] }}
+          GITHUB_TOKEN: ${{ secrets[format('{0}_WORKFLOW_PAT', steps.set-environment-names.outputs.project-upper)] }}
           TF_VAR_dp_account_number: ${{ secrets.ACCOUNT_NUMBER }}
         run: |
           terraform init -backend-config="bucket=${{ needs.setup.outputs.state-bucket }} --backend-config="dynamodb_table=${{ needs.setup.outputs.dynamo-table }}"
