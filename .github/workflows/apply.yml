@@ -33,7 +33,6 @@ jobs:
       INTG_ACCOUNT_NUMBER: ${{ secrets.TDR_INTG_ACCOUNT_NUMBER }}
       STAGING_ACCOUNT_NUMBER: ${{ secrets.TDR_STAGING_ACCOUNT_NUMBER }}
       PROD_ACCOUNT_NUMBER: ${{ secrets.TDR_PROD_ACCOUNT_NUMBER }}
-      SANDBOX_ACCOUNT_NUMBER: ${{ secrets.TDR_SANDBOX_ACCOUNT_NUMBER }}
   apply_dr2:
     uses: nationalarchives/dr2-github-actions/.github/workflows/terraform_apply.yml@dr2-github-actions
     if: github.event.inputs.project == 'dr2'
