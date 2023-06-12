@@ -139,12 +139,22 @@ Note: Testing may highlight issues with IAM roles/policies for the Cloud Custodi
 * Deploy using Jenkins
 * Use TDR Custodian Deploy pipeline for deployment
 
-### Deploy in other TNA accounts
-* Pass in the terraform backend via the command line
-* Set terraform variable for `tdr_account_number` to the account you're deploying to.
-* Set the terraform workspace to the environment you're deploying to.
-* Deploy terraform
-* Run `./tdr-mgmt-deploy.sh ${management_account_number}` with credentials for the account you are deploying to.
+## Add a new team to the repository
+* Add your team name to the input variable in [the apply workflow](./.github/workflows/apply.yml)
+* For each environment you need to deploy to, you will need to set these secrets. There are descriptions of what each one is needed for in the [da-terraform-configurations](https://github.com/nationalarchives/da-terraform-configurations) repository. The project name must be the same as the name in the `apply.yml` choice field but in upper case.
+   * {PROJECT}_{ENV_NAME}_ACCOUNT_NUMBER
+   * {PROJECT}_{ENV_NAME}_CUSTODIAN_ROLE
+   * {PROJECT}_{ENV_NAME}_DYNAMO_TABLE
+   * {PROJECT}_{ENV_NAME}_STATE_BUCKET
+   * {PROJECT}_{ENV_NAME}_TERRAFORM_EXTERNAL_ID
+   * {PROJECT}_{ENV_NAME}_TERRAFORM_ROLE
+* You will also need to set the following secrets which don't depend on the environment.
+   * {PROJECT}_EMAIL_ADDRESS
+   * {PROJECT}_MANAGEMENT_ACCOUNT
+   * {PROJECT}_SLACK_WEBHOOK
+   * {PROJECT}_WORKFLOW_PAT
+* Set up an environment in GitHub called {project-lower-case}-{environment-lower-case} for each environment you will deploy to.
+* Run the GitHub actions apply workflow. This will deploy to the chosen environment and delete the default VPCs from each region.
 
 ### Destroy Cloud Custodian
 * Destroy Cloud Custodian resources

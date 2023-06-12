@@ -10,3 +10,9 @@ variable "kms_master_key_id" {
   description = "ID of an AWS managed key or customer managed key"
   default     = "alias/aws/sqs"
 }
+
+variable "intg_account_number" {}
+
+variable "staging_account_number" {}
+
+variable "prod_account_number" {}
