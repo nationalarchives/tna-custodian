@@ -1,6 +1,5 @@
 name: 'Terraform check'
 on:
-  push:
   pull_request:
 permissions:
   id-token: write
