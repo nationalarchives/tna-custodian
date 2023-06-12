@@ -29,7 +29,7 @@ jobs:
       project-upper: ${{ steps.set-environment-names.outputs.project_upper }}
     steps:
       - id: set-environment-names
-        run: python $GITHUB_WORKSPACE/.github/scripts/set_state_parameters.py ${{ github.event.inputs.environment }} ${{ github.event.inputs.project }}
+        run: python .github/scripts/set_state_parameters.py ${{ github.event.inputs.environment }} ${{ github.event.inputs.project }}
   plan:
     runs-on: ubuntu-latest
     defaults:
@@ -60,7 +60,7 @@ jobs:
           terraform init -backend-config="bucket=${{ needs.setup.outputs.state-bucket }}" --backend-config="dynamodb_table=${{ needs.setup.outputs.dynamo-table }}"
           terraform workspace select ${{ github.event.inputs.environment }}
           pip install boto3
-          terraform plan -no-color -out=out
+          terraform plan -no-color -out=out > /dev/null
           terraform show -no-color out > out.plan
           python $GITHUB_WORKSPACE/.github/scripts/logs.py out.plan "${{ github.run_id }}${{ github.run_attempt }}" ${{ github.event.inputs.environment }}
       - uses: nationalarchives/dr2-github-actions/.github/actions/slack-send@temp-branch
@@ -136,7 +136,7 @@ jobs:
           submodules: recursive
           token: ${{ secrets[format('{0}_WORKFLOW_PAT', needs.setup.outputs.project-upper)] }}
       - id: set-environment-names
-        run: python $GITHUB_WORKSPACE/.github/scripts/set_environment_names.py ${{ github.event.inputs.environment }} ${{ github.event.inputs.project }}
+        run: python .github/scripts/set_environment_names.py ${{ github.event.inputs.environment }} ${{ github.event.inputs.project }}
       - name: Configure AWS credentials for Cloud Custodian
         uses: aws-actions/configure-aws-credentials@v1-node16
         with:
