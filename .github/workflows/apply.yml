@@ -66,7 +66,7 @@ jobs:
             if project == "tdr":
               print(f"role-name=TDRGithubActionsCustodianDeployRole{env.title()}", file=fh)
               print(f"email=tdr-secops@nationalarchives.gov.uk", file=fh)
-            else if project == "dr2":
+            elif project == "dr2":
               print(f"role-name={env.title()}DR2GithubActionsCustodianDeployRole", file=fh)
               print(f"email=da_dp_mgmt@nationalarchives.gov.uk", file=fh)
         shell: python
