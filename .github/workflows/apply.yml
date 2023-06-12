@@ -70,13 +70,13 @@ jobs:
       - name: Terraform Plan
         id: plan
         env:
-          TF_VAR_dp_account_number: ${{ secrets[needs.setup.outputs.account-number-secret] }}
+          TF_VAR_account_number: ${{ secrets[needs.setup.outputs.account-number-secret] }}
           TF_VAR_project: ${{ github.events.inputs.project }}
         run: |
           terraform init -backend-config="bucket=${{ needs.setup.outputs.state-bucket }}" --backend-config="dynamodb_table=${{ needs.setup.outputs.dynamo-table }}"
           terraform workspace select ${{ github.event.inputs.environment }}
           pip install boto3
-          terraform plan -no-color -out=out
+          terraform plan -no-color -out=out > /dev/null
           echo "Plan complete"
           terraform show -no-color out > out.plan
           echo "Show complete"
@@ -116,7 +116,8 @@ jobs:
         env:
           GITHUB_OWNER: nationalarchives
           GITHUB_TOKEN: ${{ secrets[format('{0}_WORKFLOW_PAT', needs.setup.outputs.project-upper)] }}
-          TF_VAR_dp_account_number: ${{ secrets.ACCOUNT_NUMBER }}
+          TF_VAR_account_number: ${{ secrets.ACCOUNT_NUMBER }}
+          TF_VAR_project: ${{ github.events.inputs.project }}
         run: |
           terraform init -backend-config="bucket=${{ needs.setup.outputs.state-bucket }}" --backend-config="dynamodb_table=${{ needs.setup.outputs.dynamo-table }}"
           terraform workspace select ${{ github.event.inputs.environment }}
