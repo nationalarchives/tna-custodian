@@ -100,7 +100,7 @@ jobs:
           GITHUB_OWNER: nationalarchives
           GITHUB_TOKEN: ${{ secrets[format('{0}_WORKFLOW_PAT', needs.setup.outputs.project-upper)] }}
           TF_VAR_account_number: ${{ secrets.ACCOUNT_NUMBER }}
-          TF_VAR_project: ${{ github.events.inputs.project }}
+          TF_VAR_project: ${{ github.event.inputs.project }}
         run: |
           terraform init -backend-config="bucket=${{ needs.setup.outputs.state-bucket }}" --backend-config="dynamodb_table=${{ needs.setup.outputs.dynamo-table }}"
           terraform workspace select ${{ github.event.inputs.environment }}
