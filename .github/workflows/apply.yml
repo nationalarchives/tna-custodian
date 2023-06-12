@@ -77,7 +77,9 @@ jobs:
           terraform workspace select ${{ github.event.inputs.environment }}
           pip install boto3
           terraform plan -no-color -out=out > /dev/null
+          echo "Plan complete"
           terraform show -no-color out > out.plan
+          echo "Show complete"
           python $GITHUB_WORKSPACE/.github/scripts/logs.py out.plan "${{ github.run_id }}${{ github.run_attempt }}" ${{ github.event.inputs.environment }}
       - uses: nationalarchives/dr2-github-actions/.github/actions/slack-send@temp-branch
         with:
