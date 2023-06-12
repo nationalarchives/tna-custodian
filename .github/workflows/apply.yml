@@ -26,6 +26,7 @@ jobs:
       role-name: ${{ steps.set-environment-names.outputs.role_name }}
       state-bucket: ${{ steps.set-environment-names.outputs.state_bucket }}
       dynamo-table: ${{ steps.set-environment-names.outputs.dynamo_table }}
+      project-upper: ${{ steps.set-environment-names.outputs.project_upper }}
     steps:
       - id: set-environment-names
         run: |
@@ -34,6 +35,7 @@ jobs:
           project = "${{ github.event.inputs.project }}"
           with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
             print(f"title_environment={env.title()}", file=fh)
+            print(f"project_upper={project.upper()}", file=fh)
             print(f"account_number_secret={project.upper()}_{env.upper()}_ACCOUNT_NUMBER", file=fh)
             if project == "tdr":
               print(f"role_name=TDRGithubTerraformAssumeRole{env.title()}", file=fh)
