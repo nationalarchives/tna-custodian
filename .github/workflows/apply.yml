@@ -24,6 +24,8 @@ jobs:
       account-number-secret: ${{ steps.set-environment-names.outputs.account_number_secret }}
       title-environment: ${{ steps.set-environment-names.outputs.title_environment }}
       role-name: ${{ steps.set-environment-names.outputs.role_name }}
+      state-bucket: ${{ steps.set-environment-names.outputs.state_bucket }}
+      dynamo-table: ${{ steps.set-environment-names.outputs.dynamo_table }}
     steps:
       - id: set-environment-names
         run: |
@@ -35,8 +37,12 @@ jobs:
             print(f"account_number_secret={}{env.upper()}_ACCOUNT_NUMBER", file=fh)
             if project == "tdr":
               print(f"role_name=TDRGithubTerraformAssumeRole{env.title()}", file=fh)
+              print(f"state_bucket=tdr-terraform-state", file=fh)              
+              print(f"dynamo_table=tdr-terraform-state-lock", file=fh)              
             elif project == "dr2":
               print(f"role_name=MgmtDPGithubTerraformEnvironmentsRole{env.title()}", file=fh)
+              print(f"state_bucket=mgmt-dp-terraform-state", file=fh)
+              print(f"dynamo_table=mgmt-dp-terraform-state-lock", file=fh)
         shell: python
   plan:
     runs-on: ubuntu-latest
@@ -65,7 +71,7 @@ jobs:
           TF_VAR_dp_account_number: ${{ secrets[needs.setup.outputs.account-number-secret] }}
           TF_VAR_project: ${{ github.events.inputs.project }}
         run: |
-          terraform init
+          terraform init -backend-config="bucket=${{ needs.setup.outputs.state-bucket }} --backend-config="dynamodb_table=${{ needs.setup.outputs.dynamo-table }}"
           terraform workspace select ${{ github.event.inputs.environment }}
           pip install boto3
           terraform plan -no-color -out=out > /dev/null
@@ -108,7 +114,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets[format('{0}_WORKFLOW_TOKEN', steps.set-environment-names.outputs.project-upper)] }}
           TF_VAR_dp_account_number: ${{ secrets.ACCOUNT_NUMBER }}
         run: |
-          terraform init
+          terraform init -backend-config="bucket=${{ needs.setup.outputs.state-bucket }} --backend-config="dynamodb_table=${{ needs.setup.outputs.dynamo-table }}"
           terraform workspace select ${{ github.event.inputs.environment }}
           terraform apply --auto-approve > /dev/null
       - id: next-tag
