@@ -144,6 +144,8 @@ jobs:
     environment: ${{ github.event.github.event.inputs.environment }}
     runs-on: ubuntu-latest
     steps:
+      - run: | 
+          echo ${{ format('{0}_WORKFLOW_PAT', steps.set-environment-names.outputs.project-upper)] }}
       - uses: actions/checkout@v3
         with:
           submodules: recursive
