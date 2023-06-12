@@ -147,9 +147,9 @@ jobs:
       - run: |
           pip install ruamel.yaml c7n c7n-mailer c7n-guardian --ignore-installed six
           cd accounts
-          ../custodian/scripts/deploy-custodian.sh ${{ needs.setup.outputs.project-upper }} ${{ github.event.github.event.inputs.environment }} ${{ steps.set-environment-names.outputs.role-name }} ${{ secrets[format('{0}_MANAGEMENT_ACCOUNT', needs.setup.outputs.project-upper)] }}
+          ../custodian/scripts/deploy-custodian.sh ${{ needs.setup.outputs.project-upper }} ${{ github.event.inputs.environment }} ${{ steps.set-environment-names.outputs.email }} ${{ secrets[format('{0}_MANAGEMENT_ACCOUNT', needs.setup.outputs.project-upper)] }}
       - uses: nationalarchives/tdr-github-actions/.github/actions/slack-send@main
         with:
           message: |
-            Cloud Custodian deployed to ${{ github.event.github.event.inputs.environment }} AWS account
+            Cloud Custodian deployed to ${{ github.event.inputs.environment }} AWS account
           slack-url: ${{ secrets[format('{0}_SLACK_WEBHOOK', needs.setup.outputs.project-upper)] }}
