@@ -73,7 +73,7 @@ jobs:
           TF_VAR_dp_account_number: ${{ secrets[needs.setup.outputs.account-number-secret] }}
           TF_VAR_project: ${{ github.events.inputs.project }}
         run: |
-          terraform init -backend-config="bucket=${{ needs.setup.outputs.state-bucket }} --backend-config="dynamodb_table=${{ needs.setup.outputs.dynamo-table }}"
+          terraform init -backend-config="bucket=${{ needs.setup.outputs.state-bucket }}" --backend-config="dynamodb_table=${{ needs.setup.outputs.dynamo-table }}"
           terraform workspace select ${{ github.event.inputs.environment }}
           pip install boto3
           terraform plan -no-color -out=out > /dev/null
@@ -116,7 +116,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets[format('{0}_WORKFLOW_PAT', needs.setup.outputs.project-upper)] }}
           TF_VAR_dp_account_number: ${{ secrets.ACCOUNT_NUMBER }}
         run: |
-          terraform init -backend-config="bucket=${{ needs.setup.outputs.state-bucket }} --backend-config="dynamodb_table=${{ needs.setup.outputs.dynamo-table }}"
+          terraform init -backend-config="bucket=${{ needs.setup.outputs.state-bucket }}" --backend-config="dynamodb_table=${{ needs.setup.outputs.dynamo-table }}"
           terraform workspace select ${{ github.event.inputs.environment }}
           terraform apply --auto-approve > /dev/null
       - id: next-tag
@@ -139,9 +139,8 @@ jobs:
         with:
           message: ":white_check_mark: tna-custodian deploy successful for ${{ github.event.inputs.environment }}"
           slack-url: ${{ secrets[format('{0}_SLACK_WEBHOOK', needs.setup.outputs.project-upper)] }}
-
   custodian:
-    environment: ${{ github.event.github.event.inputs.environment }}
+    environment: ${{ github.event.inputs.project }}-${{ github.event.inputs.environment }}
     runs-on: ubuntu-latest
     needs: setup
     steps:
@@ -163,7 +162,7 @@ jobs:
               print(f"role-name={env.title()}DR2GithubActionsCustodianDeployRole", file=fh)
               print(f"email=da_dp_mgmt@nationalarchives.gov.uk", file=fh)
         shell: python
-      - name: Configure AWS credentials for Lambda
+      - name: Configure AWS credentials for Cloud Custodian
         uses: aws-actions/configure-aws-credentials@v1-node16
         with:
           role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_NUMBER }}:role/${{ steps.set-environment-names.outputs.role-name }}
