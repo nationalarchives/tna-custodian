@@ -28,8 +28,9 @@ jobs:
       dynamo-table: ${{ steps.set-environment-names.outputs.dynamo_table }}
       project-upper: ${{ steps.set-environment-names.outputs.project_upper }}
     steps:
+      - uses: actions/checkout@v3
       - id: set-environment-names
-        run: python .github/scripts/set_state_parameters.py ${{ github.event.inputs.environment }} ${{ github.event.inputs.project }}
+        run: python $GITHUB_WORKSPACE/.github/scripts/set_state_parameters.py ${{ github.event.inputs.environment }} ${{ github.event.inputs.project }}
   plan:
     runs-on: ubuntu-latest
     defaults:
@@ -136,7 +137,7 @@ jobs:
           submodules: recursive
           token: ${{ secrets[format('{0}_WORKFLOW_PAT', needs.setup.outputs.project-upper)] }}
       - id: set-environment-names
-        run: python .github/scripts/set_environment_names.py ${{ github.event.inputs.environment }} ${{ github.event.inputs.project }}
+        run: python $GITHUB_WORKSPACE/.github/scripts/set_environment_names.py ${{ github.event.inputs.environment }} ${{ github.event.inputs.project }}
       - name: Configure AWS credentials for Cloud Custodian
         uses: aws-actions/configure-aws-credentials@v1-node16
         with:
