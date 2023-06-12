@@ -18,3 +18,9 @@ variable "key_policy" {
   description = "key policy within templates folder"
   default     = "enable_iam"
 }
+
+variable "intg_account_number" {}
+
+variable "staging_account_number" {}
+
+variable "prod_account_number" {}
