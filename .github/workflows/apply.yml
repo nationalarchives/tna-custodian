@@ -151,7 +151,7 @@ jobs:
       - id: set-environment-names
         run: |
           import os
-          env = "${{ github.event.github.event.inputs.environment }}"
+          env = "${{ github.event.inputs.environment }}"
           project = "${{ github.event.inputs.project }}"
           with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
             print(f"project-upper={project.upper()}", file=fh)

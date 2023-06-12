@@ -4,7 +4,7 @@ import sys
 from urllib.parse import quote_plus
 import os
 
-client = boto3.client("logs")
+client = boto3.client("logs", region_name='eu-west-2')
 timestamp = int(time.time()) * 1000
 log_group_name = f"terraform-plan-outputs-{sys.argv[3]}"
 log_stream_name = sys.argv[2]
