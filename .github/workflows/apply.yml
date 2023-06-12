@@ -71,7 +71,7 @@ jobs:
         id: plan
         env:
           TF_VAR_account_number: ${{ secrets[needs.setup.outputs.account-number-secret] }}
-          TF_VAR_project: ${{ github.events.inputs.project }}
+          TF_VAR_project: ${{ github.event.inputs.project }}
         run: |
           terraform init -backend-config="bucket=${{ needs.setup.outputs.state-bucket }}" --backend-config="dynamodb_table=${{ needs.setup.outputs.dynamo-table }}"
           terraform workspace select ${{ github.event.inputs.environment }}
