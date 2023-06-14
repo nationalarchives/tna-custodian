@@ -72,7 +72,7 @@ jobs:
           set -e
           EXIT_CODE=0
           terraform plan -no-color > out.plan 2>&1 || EXIT_CODE=$?
-          python $GITHUB_WORKSPACE/.github/scripts/logs.py out.apply "${{ github.run_id }}${{ github.run_attempt }}" ${{ github.event.inputs.environment }}
+          python $GITHUB_WORKSPACE/.github/scripts/logs.py out.plan "${{ github.run_id }}${{ github.run_attempt }}" ${{ github.event.inputs.environment }}
           exit $EXIT_CODE
 
       - uses: nationalarchives/dr2-github-actions/.github/actions/slack-send@temp-branch
