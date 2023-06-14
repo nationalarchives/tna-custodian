@@ -29,6 +29,7 @@ jobs:
       dynamo-table: ${{ secrets[format('{0}_{1}_DYNAMO_TABLE', steps.set-environment-names.outputs.project_upper, steps.set-environment-names.outputs.environment_upper)] }}
     steps:
       - uses: actions/checkout@v3
+      - run: echo ${{ steps.set-environment-names.outputs.project_upper }}
       - run: echo ${{ format('{0}_{1}_TERRAFORM_ROLE', steps.set-environment-names.outputs.project_upper, steps.set-environment-names.outputs.environment_upper) }}
       - id: set-environment-names
         run: |
