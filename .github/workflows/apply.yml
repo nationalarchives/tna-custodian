@@ -49,7 +49,7 @@ jobs:
       project: ${{ github.event.inputs.project }}
     secrets:
       WORKFLOW_TOKEN: ${{ secrets.WORKFLOW_PAT }}
-      ACCOUNT_NUMBER: ${{ secrets.ACCOUNT_NUMBER }}
+      ACCOUNT_NUMBER: ${{ secrets[needs.setup.outputs.account-number-secret] }}
       SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
       TERRAFORM_ROLE: ${{ secrets[needs.setup.outputs.terraform-role-var] }}
       STATE_BUCKET: ${{ secrets[needs.setup.outputs.state-bucket-var] }}
