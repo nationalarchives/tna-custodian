@@ -21,6 +21,7 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     outputs:
+      account-number-secret: ${{ steps.set-environment-names.outputs.account_number_secret }}
       project-upper: ${{ steps.set-environment-names.outputs.project_upper }}
       terraform-role-var: ${{ format('{0}_{1}_TERRAFORM_ROLE', steps.set-environment-names.outputs.project_upper, steps.set-environment-names.outputs.environment_upper) }}
       custodian-role-var: ${{ format('{0}_{1}_CUSTODIAN_ROLE', steps.set-environment-names.outputs.project_upper, steps.set-environment-names.outputs.environment_upper) }}
@@ -32,8 +33,11 @@ jobs:
         run: |
           import os
           with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
-              print(f"project_upper={${{ github.event.inputs.project }}.upper()}", file=fh)
-              print(f"environment_upper={${{ github.event.inputs.environment }}.upper()}", file=fh)
+              project = "${{ github.event.inputs.project }}"
+              env = "${{ github.event.inputs.environment }}"
+              print(f"project_upper={project.upper()}", file=fh)
+              print(f"environment_upper={env.upper()}", file=fh)
+              print(f"account_number_secret={project.upper()}_{env.upper()}_ACCOUNT_NUMBER", file=fh)
         shell: python
   apply:
     uses: nationalarchives/dr2-github-actions/.github/workflows/terraform_apply.yml@create-generic-apply-job
