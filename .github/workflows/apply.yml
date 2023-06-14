@@ -27,6 +27,7 @@ jobs:
       - uses: actions/checkout@v3
       - id: set-environment-names
         run: |
+          import os
           with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
               print(f"project_upper={project.upper()}", file=fh)
               print(f"account_number_secret={project.upper()}_{env.upper()}_ACCOUNT_NUMBER", file=fh)
