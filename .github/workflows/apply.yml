@@ -69,8 +69,12 @@ jobs:
           terraform init -backend-config="bucket=${{ secrets[needs.setup.outputs.state-bucket-var] }}" --backend-config="dynamodb_table=${{ needs.setup.outputs.dynamo-table }}"
           terraform workspace select ${{ github.event.inputs.environment }}
           pip install boto3
-          terraform plan -no-color > out.plan 2>&1 || true
-          python $GITHUB_WORKSPACE/.github/scripts/logs.py out.plan "${{ github.run_id }}${{ github.run_attempt }}" ${{ github.event.inputs.environment }}
+          set -e
+          EXIT_CODE=0
+          terraform plan -no-color > out.plan 2>&1 || EXIT_CODE=$?
+          python $GITHUB_WORKSPACE/.github/scripts/logs.py out.apply "${{ github.run_id }}${{ github.run_attempt }}" ${{ github.event.inputs.environment }}
+          exit $EXIT_CODE
+
       - uses: nationalarchives/dr2-github-actions/.github/actions/slack-send@temp-branch
         with:
           message: |
@@ -109,8 +113,11 @@ jobs:
         run: |
           terraform init -backend-config="bucket=${{ secrets[needs.setup.outputs.state-bucket-var] }}" --backend-config="dynamodb_table=${{ secrets[needs.setup.outputs.dynamo-table-var] }}"
           terraform workspace select ${{ github.event.inputs.environment }}
-          terraform apply --auto-approve > out.apply 2>&1 || true
+          set -e
+          EXIT_CODE=0
+          terraform apply --auto-approve > out.apply 2>&1 || EXIT_CODE=$?
           python $GITHUB_WORKSPACE/.github/scripts/logs.py out.apply "${{ github.run_id }}${{ github.run_attempt }}" ${{ github.event.inputs.environment }}
+          exit $EXIT_CODE
 
       - id: next-tag
         uses: nationalarchives/dr2-github-actions/.github/actions/get-next-version@temp-branch
