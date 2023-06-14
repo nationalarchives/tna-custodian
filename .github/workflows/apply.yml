@@ -115,6 +115,7 @@ jobs:
         run: |
           terraform init -backend-config="bucket=${{ secrets[needs.setup.outputs.state-bucket-var] }}" --backend-config="dynamodb_table=${{ secrets[needs.setup.outputs.dynamo-table-var] }}"
           terraform workspace select ${{ github.event.inputs.environment }}
+          pip install boto3
           set -e
           EXIT_CODE=0
           terraform apply --auto-approve > out.apply 2>&1 || EXIT_CODE=$?
