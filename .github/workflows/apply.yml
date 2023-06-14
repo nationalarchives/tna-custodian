@@ -29,6 +29,8 @@ jobs:
         run: |
           import os
           with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
+              project = ${{ github.event.inputs.project }}
+              evn = ${{ github.event.inputs.environment }}
               print(f"project_upper={project.upper()}", file=fh)
               print(f"account_number_secret={project.upper()}_{env.upper()}_ACCOUNT_NUMBER", file=fh)
         shell: python
