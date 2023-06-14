@@ -66,7 +66,7 @@ jobs:
           TF_VAR_account_number: ${{ secrets[needs.setup.outputs.account-number-secret] }}
           TF_VAR_project: ${{ github.event.inputs.project }}
         run: |
-          terraform init -backend-config="bucket=${{ secrets[needs.setup.outputs.state-bucket-var] }}" --backend-config="dynamodb_table=${{ needs.setup.outputs.dynamo-table }}"
+          terraform init -backend-config="bucket=${{ secrets[needs.setup.outputs.state-bucket-var] }}" --backend-config="dynamodb_table=${{ secrets[needs.setup.outputs.dynamo-table-var] }}"
           terraform workspace select ${{ github.event.inputs.environment }}
           pip install boto3
           set -e
