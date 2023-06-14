@@ -119,7 +119,7 @@ jobs:
           set -e
           EXIT_CODE=0
           terraform apply --auto-approve > out.apply 2>&1 || EXIT_CODE=$?
-          python $GITHUB_WORKSPACE/.github/scripts/logs.py out.apply "${{ github.run_id }}${{ github.run_attempt }}" ${{ github.event.inputs.environment }}
+          python $GITHUB_WORKSPACE/.github/scripts/logs.py out.apply "${{ github.run_id }}${{ github.run_attempt }}1" ${{ github.event.inputs.environment }}
           exit $EXIT_CODE
 
       - id: next-tag
@@ -156,7 +156,7 @@ jobs:
       - name: Configure AWS credentials for Cloud Custodian
         uses: aws-actions/configure-aws-credentials@v1-node16
         with:
-          role-to-assume: ${{ needs.setup.outputs.custodian-role }}
+          role-to-assume: ${{ secrets[needs.setup.outputs.custodian-role-var] }}
           aws-region: eu-west-2
           role-session-name: CustodianRole
       - run: |
