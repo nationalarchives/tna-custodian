@@ -69,8 +69,7 @@ jobs:
           terraform init -backend-config="bucket=${{ secrets[needs.setup.outputs.state-bucket-var] }}" --backend-config="dynamodb_table=${{ needs.setup.outputs.dynamo-table }}"
           terraform workspace select ${{ github.event.inputs.environment }}
           pip install boto3
-          terraform plan -no-color -out=out > /dev/null
-          terraform show -no-color out > out.plan
+          terraform plan -no-color > out.plan 2>&1 || true
           python $GITHUB_WORKSPACE/.github/scripts/logs.py out.plan "${{ github.run_id }}${{ github.run_attempt }}" ${{ github.event.inputs.environment }}
       - uses: nationalarchives/dr2-github-actions/.github/actions/slack-send@temp-branch
         with:
@@ -110,7 +109,9 @@ jobs:
         run: |
           terraform init -backend-config="bucket=${{ secrets[needs.setup.outputs.state-bucket-var] }}" --backend-config="dynamodb_table=${{ secrets[needs.setup.outputs.dynamo-table-var] }}"
           terraform workspace select ${{ github.event.inputs.environment }}
-          terraform apply --auto-approve > /dev/null
+          terraform apply --auto-approve > out.apply 2>&1 || true
+          python $GITHUB_WORKSPACE/.github/scripts/logs.py out.apply "${{ github.run_id }}${{ github.run_attempt }}" ${{ github.event.inputs.environment }}
+
       - id: next-tag
         uses: nationalarchives/dr2-github-actions/.github/actions/get-next-version@temp-branch
         with:
