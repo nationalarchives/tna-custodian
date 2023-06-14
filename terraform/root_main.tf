@@ -3,7 +3,7 @@ module "global_parameters" {
 }
 
 module "terraform_config" {
-  source = "git::https://github.com/nationalarchives/da-terraform-configurations//?ref=create-terraform-config"
+  source = "./da-terraform-configurations/"
   project = var.project
 }
 
