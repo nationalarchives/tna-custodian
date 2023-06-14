@@ -23,10 +23,10 @@ jobs:
     outputs:
       account-number-secret: ${{ steps.set-environment-names.outputs.account_number_secret }}
       project-upper: ${{ steps.set-environment-names.outputs.project_upper }}
-      terraform-role: ${{ secrets[format('{0}_{1}_TERRAFORM_ROLE', steps.set-environment-names.outputs.project_upper, steps.set-environment-names.outputs.environment_upper)] }}
-      custodian-role: ${{ secrets[format('{0}_{1}_CUSTODIAN_ROLE', steps.set-environment-names.outputs.project_upper, steps.set-environment-names.outputs.environment_upper)] }}
-      state-bucket: ${{ secrets[format('{0}_{1}_STATE_BUCKET', steps.set-environment-names.outputs.project_upper, steps.set-environment-names.outputs.environment_upper)] }}
-      dynamo-table: ${{ secrets[format('{0}_{1}_DYNAMO_TABLE', steps.set-environment-names.outputs.project_upper, steps.set-environment-names.outputs.environment_upper)] }}
+      terraform-role-var: ${{ format('{0}_{1}_TERRAFORM_ROLE', steps.set-environment-names.outputs.project_upper, steps.set-environment-names.outputs.environment_upper) }}
+      custodian-role-var: ${{ format('{0}_{1}_CUSTODIAN_ROLE', steps.set-environment-names.outputs.project_upper, steps.set-environment-names.outputs.environment_upper) }}
+      state-bucket-var: ${{ format('{0}_{1}_STATE_BUCKET', steps.set-environment-names.outputs.project_upper, steps.set-environment-names.outputs.environment_upper) }}
+      dynamo-table-var: ${{ format('{0}_{1}_DYNAMO_TABLE', steps.set-environment-names.outputs.project_upper, steps.set-environment-names.outputs.environment_upper) }}
     steps:
       - uses: actions/checkout@v3
       - id: set-environment-names
@@ -39,8 +39,6 @@ jobs:
               print(f"environment_upper={env.upper()}", file=fh)
               print(f"account_number_secret={project.upper()}_{env.upper()}_ACCOUNT_NUMBER", file=fh)
         shell: python
-      - run: echo ${{ steps.set-environment-names.outputs.project_upper }}
-      - run: echo ${{ format('{0}_{1}_TERRAFORM_ROLE', steps.set-environment-names.outputs.project_upper, steps.set-environment-names.outputs.environment_upper) }}
   plan:
     runs-on: ubuntu-latest
     defaults:
@@ -56,7 +54,7 @@ jobs:
       - name: Configure AWS credentials for Lambda
         uses: aws-actions/configure-aws-credentials@v1-node16
         with:
-          role-to-assume: ${{ needs.setup.outputs.terraform-role }}
+          role-to-assume: ${{ secrets[needs.setup.outputs.terraform-role-var] }}
           aws-region: eu-west-2
           role-session-name: TerraformRole
       - uses: hashicorp/setup-terraform@v1
@@ -68,7 +66,7 @@ jobs:
           TF_VAR_account_number: ${{ secrets[needs.setup.outputs.account-number-secret] }}
           TF_VAR_project: ${{ github.event.inputs.project }}
         run: |
-          terraform init -backend-config="bucket=${{ needs.setup.outputs.state-bucket }}" --backend-config="dynamodb_table=${{ needs.setup.outputs.dynamo-table }}"
+          terraform init -backend-config="bucket=${{ secrets[needs.setup.outputs.state-bucket-var] }}" --backend-config="dynamodb_table=${{ needs.setup.outputs.dynamo-table }}"
           terraform workspace select ${{ github.event.inputs.environment }}
           pip install boto3
           terraform plan -no-color -out=out > /dev/null
@@ -99,7 +97,7 @@ jobs:
       - name: Configure AWS credentials for Lambda
         uses: aws-actions/configure-aws-credentials@v1-node16
         with:
-          role-to-assume: ${{ needs.setup.outputs.terraform-role }}
+          role-to-assume: ${{ secrets[needs.setup.outputs.terraform-role-var] }}
           aws-region: eu-west-2
           role-session-name: TerraformRole
       - uses: hashicorp/setup-terraform@v1
@@ -110,7 +108,7 @@ jobs:
           TF_VAR_account_number: ${{ secrets.ACCOUNT_NUMBER }}
           TF_VAR_project: ${{ github.event.inputs.project }}
         run: |
-          terraform init -backend-config="bucket=${{ needs.setup.outputs.state-bucket }}" --backend-config="dynamodb_table=${{ needs.setup.outputs.dynamo-table }}"
+          terraform init -backend-config="bucket=${{ secrets[needs.setup.outputs.state-bucket-var] }}" --backend-config="dynamodb_table=${{ secrets[needs.setup.outputs.dynamo-table-var] }}"
           terraform workspace select ${{ github.event.inputs.environment }}
           terraform apply --auto-approve > /dev/null
       - id: next-tag
