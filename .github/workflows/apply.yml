@@ -22,15 +22,15 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       account-number-secret: ${{ steps.set-environment-names.outputs.account_number_secret }}
-      title-environment: ${{ steps.set-environment-names.outputs.title_environment }}
-      role-name: ${{ steps.set-environment-names.outputs.role_name }}
-      state-bucket: ${{ steps.set-environment-names.outputs.state_bucket }}
-      dynamo-table: ${{ steps.set-environment-names.outputs.dynamo_table }}
       project-upper: ${{ steps.set-environment-names.outputs.project_upper }}
     steps:
       - uses: actions/checkout@v3
       - id: set-environment-names
-        run: python $GITHUB_WORKSPACE/.github/scripts/set_state_parameters.py ${{ github.event.inputs.environment }} ${{ github.event.inputs.project }}
+        run: |
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
+              print(f"project_upper={project.upper()}", file=fh)
+              print(f"account_number_secret={project.upper()}_{env.upper()}_ACCOUNT_NUMBER", file=fh)
+        shell: python
   plan:
     runs-on: ubuntu-latest
     defaults:
@@ -46,7 +46,7 @@ jobs:
       - name: Configure AWS credentials for Lambda
         uses: aws-actions/configure-aws-credentials@v1-node16
         with:
-          role-to-assume: arn:aws:iam::${{ secrets[format('{0}_MANAGEMENT_ACCOUNT', needs.setup.outputs.project-upper)] }}:role/${{ needs.setup.outputs.role-name }}
+          role-to-assume: ${{ secrets[format('{0}_TERRAFORM_ROLE', needs.setup.outputs.project-upper)] }}
           aws-region: eu-west-2
           role-session-name: TerraformRole
       - uses: hashicorp/setup-terraform@v1
@@ -89,7 +89,7 @@ jobs:
       - name: Configure AWS credentials for Lambda
         uses: aws-actions/configure-aws-credentials@v1-node16
         with:
-          role-to-assume: arn:aws:iam::${{ secrets[format('{0}_MANAGEMENT_ACCOUNT', needs.setup.outputs.project-upper)] }}:role/${{ needs.setup.outputs.role-name }}
+          role-to-assume: ${{ secrets[format('{0}_TERRAFORM_ROLE', needs.setup.outputs.project-upper)] }}
           aws-region: eu-west-2
           role-session-name: TerraformRole
       - uses: hashicorp/setup-terraform@v1
@@ -97,12 +97,10 @@ jobs:
           terraform_version: 1.3.2
       - name: Run apply
         env:
-          GITHUB_OWNER: nationalarchives
-          GITHUB_TOKEN: ${{ secrets[format('{0}_WORKFLOW_PAT', needs.setup.outputs.project-upper)] }}
           TF_VAR_account_number: ${{ secrets.ACCOUNT_NUMBER }}
           TF_VAR_project: ${{ github.event.inputs.project }}
         run: |
-          terraform init -backend-config="bucket=${{ needs.setup.outputs.state-bucket }}" --backend-config="dynamodb_table=${{ needs.setup.outputs.dynamo-table }}"
+          terraform init -backend-config="bucket=${{ secrets[format('{0}_STATE_BUCKET', needs.setup.outputs.project-upper)] }}" --backend-config="dynamodb_table=${{ secrets[format('{0}_TERRAFORM_ROLE', needs.setup.outputs.project-upper)] }}"
           terraform workspace select ${{ github.event.inputs.environment }}
           terraform apply --auto-approve > /dev/null
       - id: next-tag
@@ -136,12 +134,10 @@ jobs:
         with:
           submodules: recursive
           token: ${{ secrets[format('{0}_WORKFLOW_PAT', needs.setup.outputs.project-upper)] }}
-      - id: set-environment-names
-        run: python $GITHUB_WORKSPACE/.github/scripts/set_environment_names.py ${{ github.event.inputs.environment }} ${{ github.event.inputs.project }}
       - name: Configure AWS credentials for Cloud Custodian
         uses: aws-actions/configure-aws-credentials@v1-node16
         with:
-          role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_NUMBER }}:role/${{ steps.set-environment-names.outputs.role-name }}
+          role-to-assume: ${{ secrets[format('{0}_CUSTODIAN_ROLE', needs.setup.outputs.project-upper)] }}
           aws-region: eu-west-2
           role-session-name: CustodianRole
       - run: |

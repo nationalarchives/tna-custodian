@@ -10,6 +10,8 @@ with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
         print(f"role_name=TDRGithubTerraformAssumeRole{env.title()}", file=fh)
         print(f"state_bucket=tdr-terraform-state", file=fh)
         print(f"dynamo_table=tdr-terraform-state-lock", file=fh)
+        print(f"custodian_role_name=TDRGithubActionsCustodianDeployRole{env.title()}", file=fh)
+        print(f"email=tdr-secops@nationalarchives.gov.uk", file=fh)
     elif project == "dr2":
         print(f"role_name=MgmtDPGithubTerraformEnvironmentsRole{env.title()}", file=fh)
         print(f"state_bucket=mgmt-dp-terraform-state", file=fh)

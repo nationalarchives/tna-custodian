@@ -9,4 +9,16 @@ locals {
       "CostCentre"  = module.global_parameters.cost_centre
     }
   )
+  account_parameter_names = {
+    tdr = {
+      intg = "/mgmt/intg_account"
+      staging = "/mgmt/staging_account"
+      prod = "/mgmt/prod_account"
+    }
+    dr2 = {
+      intg = "/mgmt/intg_account_number"
+      staging = "/mgmt/staging_account_number"
+      prod = "/mgmt/prod_account_number"
+    }
+  }
 }

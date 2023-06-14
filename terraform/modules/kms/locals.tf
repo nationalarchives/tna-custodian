@@ -4,5 +4,5 @@ locals {
 }
 
 locals {
-  kms_key_id = var.project == "tdr" && local.environment == "mgmt" ? aws_kms_key.encryption.*.arn[0] : ""
+  kms_key_id = local.environment == "mgmt" ? aws_kms_key.encryption.*.arn[0] : ""
 }
