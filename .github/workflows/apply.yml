@@ -21,7 +21,6 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     outputs:
-      account-number-secret: ${{ steps.set-environment-names.outputs.account_number_secret }}
       project-upper: ${{ steps.set-environment-names.outputs.project_upper }}
       terraform-role-var: ${{ format('{0}_{1}_TERRAFORM_ROLE', steps.set-environment-names.outputs.project_upper, steps.set-environment-names.outputs.environment_upper) }}
       custodian-role-var: ${{ format('{0}_{1}_CUSTODIAN_ROLE', steps.set-environment-names.outputs.project_upper, steps.set-environment-names.outputs.environment_upper) }}
@@ -33,115 +32,24 @@ jobs:
         run: |
           import os
           with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
-              project = "${{ github.event.inputs.project }}"
-              env = "${{ github.event.inputs.environment }}"
-              print(f"project_upper={project.upper()}", file=fh)
-              print(f"environment_upper={env.upper()}", file=fh)
-              print(f"account_number_secret={project.upper()}_{env.upper()}_ACCOUNT_NUMBER", file=fh)
+              print(f"project_upper={${{ github.event.inputs.project }}.upper()}", file=fh)
+              print(f"environment_upper={${{ github.event.inputs.environment }}.upper()}", file=fh)
         shell: python
-  plan:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: terraform
-    needs: setup
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          submodules: recursive
-          token: ${{ secrets[format('{0}_WORKFLOW_PAT', needs.setup.outputs.project-upper)] }}
-      - name: Configure AWS credentials for Lambda
-        uses: aws-actions/configure-aws-credentials@v1-node16
-        with:
-          role-to-assume: ${{ secrets[needs.setup.outputs.terraform-role-var] }}
-          aws-region: eu-west-2
-          role-session-name: TerraformRole
-      - uses: hashicorp/setup-terraform@v1
-        with:
-          terraform_version: 1.3.2
-      - name: Terraform Plan
-        id: plan
-        env:
-          GITHUB_TOKEN: ${{ secrets[format('{0}_WORKFLOW_PAT', needs.setup.outputs.project-upper)] }}
-          TF_VAR_account_number: ${{ secrets[needs.setup.outputs.account-number-secret] }}
-          TF_VAR_project: ${{ github.event.inputs.project }}
-        run: |
-          terraform init -backend-config="bucket=${{ secrets[needs.setup.outputs.state-bucket-var] }}" --backend-config="dynamodb_table=${{ secrets[needs.setup.outputs.dynamo-table-var] }}"
-          terraform workspace select ${{ github.event.inputs.environment }}
-          pip install boto3
-          set -e
-          EXIT_CODE=0
-          terraform plan -no-color > out.plan 2>&1 || EXIT_CODE=$?
-          python $GITHUB_WORKSPACE/.github/scripts/logs.py out.plan "${{ github.run_id }}${{ github.run_attempt }}" ${{ github.event.inputs.environment }}
-          exit $EXIT_CODE
-
-      - uses: nationalarchives/dr2-github-actions/.github/actions/slack-send@temp-branch
-        with:
-          message: |
-            :book: Terraform plan ready for repository tna-custodian environment ${{ github.event.inputs.environment }}
-            :log: View the <${{ steps.plan.outputs.log-url }}|plan logs> in the management account.
-            :white_check_mark: <https://github.com/nationalarchives/tna-custodian/actions/runs/${{ github.run_id }}|Approve the workflow>
-          slack-url: ${{ secrets[format('{0}_SLACK_WEBHOOK', needs.setup.outputs.project-upper)] }}
   apply:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: terraform
-    needs:
-      - plan
-      - setup
-    environment: ${{ github.event.inputs.project }}-${{ github.event.inputs.environment }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          submodules: recursive
-          token: ${{ secrets[format('{0}_WORKFLOW_PAT', needs.setup.outputs.project-upper)] }}
-      - name: Configure AWS credentials for Lambda
-        uses: aws-actions/configure-aws-credentials@v1-node16
-        with:
-          role-to-assume: ${{ secrets[needs.setup.outputs.terraform-role-var] }}
-          aws-region: eu-west-2
-          role-session-name: TerraformRole
-      - uses: hashicorp/setup-terraform@v1
-        with:
-          terraform_version: 1.3.2
-      - name: Run apply
-        env:
-          GITHUB_TOKEN: ${{ secrets[format('{0}_WORKFLOW_PAT', needs.setup.outputs.project-upper)] }}
-          TF_VAR_account_number: ${{ secrets.ACCOUNT_NUMBER }}
-          TF_VAR_project: ${{ github.event.inputs.project }}
-        run: |
-          terraform init -backend-config="bucket=${{ secrets[needs.setup.outputs.state-bucket-var] }}" --backend-config="dynamodb_table=${{ secrets[needs.setup.outputs.dynamo-table-var] }}"
-          terraform workspace select ${{ github.event.inputs.environment }}
-          pip install boto3
-          set -e
-          EXIT_CODE=0
-          terraform apply --auto-approve > out.apply 2>&1 || EXIT_CODE=$?
-          python $GITHUB_WORKSPACE/.github/scripts/logs.py out.apply "${{ github.run_id }}${{ github.run_attempt }}1" ${{ github.event.inputs.environment }}
-          exit $EXIT_CODE
-
-      - id: next-tag
-        uses: nationalarchives/dr2-github-actions/.github/actions/get-next-version@temp-branch
-        with:
-          repo-name: tna-custodian
-      - run: |
-          git tag ${{ steps.next-tag.outputs.next-version }}
-          git push origin ${{ steps.next-tag.outputs.next-version }}
-          git branch -f release-${{ github.event.inputs.environment }} HEAD
-          git push -f origin release-${{ github.event.inputs.environment }}
-      - name: Send failure message
-        if: failure()
-        uses: nationalarchives/dr2-github-actions/.github/actions/slack-send@temp-branch
-        with:
-          message: ":warning: tna-custodian deploy failed for ${{ github.event.inputs.environment }}"
-          slack-url: ${{ secrets[format('{0}_SLACK_WEBHOOK', needs.setup.outputs.project-upper)] }}
-      - name: Send success message
-        uses: nationalarchives/dr2-github-actions/.github/actions/slack-send@temp-branch
-        with:
-          message: ":white_check_mark: tna-custodian deploy successful for ${{ github.event.inputs.environment }}"
-          slack-url: ${{ secrets[format('{0}_SLACK_WEBHOOK', needs.setup.outputs.project-upper)] }}
+    uses: nationalarchives/dr2-github-actions/.github/workflows/terraform_apply.yml@create-generic-apply-job
+    with:
+      repo-name: tna-custodian
+      environment: ${{ github.event.inputs.environment }}
+      working-directory: terraform
+      project: ${{ github.event.inputs.project }}
+    secrets:
+      MANAGEMENT_ACCOUNT: ${{ secrets.MANAGEMENT_ACCOUNT }}
+      WORKFLOW_PAT: ${{ secrets.WORKFLOW_PAT }}
+      ACCOUNT_NUMBER: ${{ secrets.ACCOUNT_NUMBER }}
+      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+      TERRAFORM_ROLE: ${{ secrets[needs.setup.outputs.terraform-role-var] }}
+      STATE_BUCKET: ${{ secrets[needs.setup.outputs.state-bucket-var] }}
+      DYNAMO_TABLE: ${{ secrets[needs.setup.outputs.dynamo-table-var] }}
   custodian:
     environment: ${{ github.event.inputs.project }}-${{ github.event.inputs.environment }}
     runs-on: ubuntu-latest
