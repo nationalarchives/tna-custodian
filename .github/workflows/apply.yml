@@ -37,6 +37,7 @@ jobs:
         shell: python
   apply:
     uses: nationalarchives/dr2-github-actions/.github/workflows/terraform_apply.yml@create-generic-apply-job
+    needs: setup
     with:
       repo-name: tna-custodian
       environment: ${{ github.event.inputs.environment }}
