@@ -43,8 +43,7 @@ jobs:
       working-directory: terraform
       project: ${{ github.event.inputs.project }}
     secrets:
-      MANAGEMENT_ACCOUNT: ${{ secrets.MANAGEMENT_ACCOUNT }}
-      WORKFLOW_PAT: ${{ secrets.WORKFLOW_PAT }}
+      WORKFLOW_TOKEN: ${{ secrets.WORKFLOW_PAT }}
       ACCOUNT_NUMBER: ${{ secrets.ACCOUNT_NUMBER }}
       SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
       TERRAFORM_ROLE: ${{ secrets[needs.setup.outputs.terraform-role-var] }}
