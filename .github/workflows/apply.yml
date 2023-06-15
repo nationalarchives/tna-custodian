@@ -32,12 +32,12 @@ jobs:
       working-directory: terraform
       project: ${{ github.event.inputs.project }}
     secrets:
-      WORKFLOW_TOKEN: ${{ secrets[needs.setup.outputs.workflow-token-var] }}
-      ACCOUNT_NUMBER: ${{ secrets[needs.setup.outputs.account-number-secret] }}
-      SLACK_WEBHOOK: ${{ secrets[needs.setup.outputs.slack-webhook-var] }}
-      TERRAFORM_ROLE: ${{ secrets[needs.setup.outputs.terraform-role-var] }}
-      STATE_BUCKET: ${{ secrets[needs.setup.outputs.state-bucket-var] }}
-      DYNAMO_TABLE: ${{ secrets[needs.setup.outputs.dynamo-table-var] }}
+      WORKFLOW_TOKEN: ${{ secrets[needs.setup.outputs.workflow-token] }}
+      ACCOUNT_NUMBER: ${{ secrets[needs.setup.outputs.account-number] }}
+      SLACK_WEBHOOK: ${{ secrets[needs.setup.outputs.slack-webhook] }}
+      TERRAFORM_ROLE: ${{ secrets[needs.setup.outputs.terraform-role] }}
+      STATE_BUCKET: ${{ secrets[needs.setup.outputs.state-bucket] }}
+      DYNAMO_TABLE: ${{ secrets[needs.setup.outputs.dynamo-table] }}
   custodian:
     environment: ${{ github.event.inputs.project }}-${{ github.event.inputs.environment }}
     runs-on: ubuntu-latest
