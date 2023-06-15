@@ -27,6 +27,8 @@ jobs:
       custodian-role-var: ${{ format('{0}_{1}_CUSTODIAN_ROLE', steps.set-environment-names.outputs.project_upper, steps.set-environment-names.outputs.environment_upper) }}
       state-bucket-var: ${{ format('{0}_{1}_STATE_BUCKET', steps.set-environment-names.outputs.project_upper, steps.set-environment-names.outputs.environment_upper) }}
       dynamo-table-var: ${{ format('{0}_{1}_DYNAMO_TABLE', steps.set-environment-names.outputs.project_upper, steps.set-environment-names.outputs.environment_upper) }}
+      slack-webhook-var: ${{ format('{0}_SLACK_WEBHOOK', steps.set-environment-names.outputs.project_upper) }}
+      workflow-token-var: ${{ format('{0}_WORKFLOW_PAT', steps.set-environment-names.outputs.project_upper) }}
     steps:
       - uses: actions/checkout@v3
       - id: set-environment-names
@@ -48,9 +50,9 @@ jobs:
       working-directory: terraform
       project: ${{ github.event.inputs.project }}
     secrets:
-      WORKFLOW_TOKEN: ${{ secrets.WORKFLOW_PAT }}
+      WORKFLOW_TOKEN: ${{ secrets[needs.setup.outputs.workflow-token-var] }}
       ACCOUNT_NUMBER: ${{ secrets[needs.setup.outputs.account-number-secret] }}
-      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+      SLACK_WEBHOOK: ${{ secrets[needs.setup.outputs.slack-webhook-var] }}
       TERRAFORM_ROLE: ${{ secrets[needs.setup.outputs.terraform-role-var] }}
       STATE_BUCKET: ${{ secrets[needs.setup.outputs.state-bucket-var] }}
       DYNAMO_TABLE: ${{ secrets[needs.setup.outputs.dynamo-table-var] }}
