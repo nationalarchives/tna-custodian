@@ -19,12 +19,12 @@ permissions:
   contents: write
 jobs:
   setup:
-    uses: nationalarchives/dr2-github-actions/.github/workflows/terraform_apply.yml@create-generic-apply-job
+    uses: nationalarchives/dr2-github-actions/.github/workflows/set_terraform_var_names.yml@create-generic-apply-job
     with:
       project: ${{ github.event.inputs.project }}
       environment: ${{ github.event.inputs.environment }}
   apply:
-    uses: nationalarchives/dr2-github-actions/.github/workflows/set_terraform_var_names.yml@create-generic-apply-job
+    uses: nationalarchives/dr2-github-actions/.github/workflows/terraform_apply.yml@create-generic-apply-job
     needs: setup
     with:
       repo-name: tna-custodian
