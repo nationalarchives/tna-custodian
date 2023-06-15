@@ -20,27 +20,8 @@ permissions:
 jobs:
   setup:
     runs-on: ubuntu-latest
-    outputs:
-      account-number-secret: ${{ steps.set-environment-names.outputs.account_number_secret }}
-      project-upper: ${{ steps.set-environment-names.outputs.project_upper }}
-      terraform-role-var: ${{ format('{0}_{1}_TERRAFORM_ROLE', steps.set-environment-names.outputs.project_upper, steps.set-environment-names.outputs.environment_upper) }}
-      custodian-role-var: ${{ format('{0}_{1}_CUSTODIAN_ROLE', steps.set-environment-names.outputs.project_upper, steps.set-environment-names.outputs.environment_upper) }}
-      state-bucket-var: ${{ format('{0}_{1}_STATE_BUCKET', steps.set-environment-names.outputs.project_upper, steps.set-environment-names.outputs.environment_upper) }}
-      dynamo-table-var: ${{ format('{0}_{1}_DYNAMO_TABLE', steps.set-environment-names.outputs.project_upper, steps.set-environment-names.outputs.environment_upper) }}
-      slack-webhook-var: ${{ format('{0}_SLACK_WEBHOOK', steps.set-environment-names.outputs.project_upper) }}
-      workflow-token-var: ${{ format('{0}_WORKFLOW_PAT', steps.set-environment-names.outputs.project_upper) }}
     steps:
-      - uses: actions/checkout@v3
-      - id: set-environment-names
-        run: |
-          import os
-          with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
-              project = "${{ github.event.inputs.project }}"
-              env = "${{ github.event.inputs.environment }}"
-              print(f"project_upper={project.upper()}", file=fh)
-              print(f"environment_upper={env.upper()}", file=fh)
-              print(f"account_number_secret={project.upper()}_{env.upper()}_ACCOUNT_NUMBER", file=fh)
-        shell: python
+      - uses: nationalarchives/dr2-github-actions/.github/actions/set-terraform-secret-names@create-generic-apply-job
   apply:
     uses: nationalarchives/dr2-github-actions/.github/workflows/terraform_apply.yml@create-generic-apply-job
     needs: setup
