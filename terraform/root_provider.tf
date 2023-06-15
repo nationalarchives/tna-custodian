@@ -6,7 +6,7 @@ provider "aws" {
     content {
       role_arn     = local.assume_role
       session_name = "terraform"
-      external_id  = module.terraform_config.terraform_config["terraform_external_id"]
+      external_id  = module.terraform_config.terraform_config[local.environment]["terraform_external_id"]
     }
   }
 }
