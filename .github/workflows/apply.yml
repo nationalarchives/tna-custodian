@@ -23,17 +23,6 @@ jobs:
     with:
       project: ${{ github.event.inputs.project }}
       environment: ${{ github.event.inputs.environment }}
-  test:
-    runs-on: ubuntu-latest
-    needs: setup
-    steps:
-      - run: echo ${{ needs.setup.outputs.workflow-token }}
-      - run: echo ${{ needs.setup.outputs.account-number }}
-      - run: echo ${{ needs.setup.outputs.slack-webhook }}
-      - run: echo ${{ needs.setup.outputs.terraform-role }}
-      - run: echo ${{ needs.setup.outputs.state-bucket }}
-      - run: echo ${{ needs.setup.outputs.dynamo-table }}
-
   apply:
     uses: nationalarchives/dr2-github-actions/.github/workflows/terraform_apply.yml@create-generic-apply-job
     needs: setup
