@@ -48,19 +48,19 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: recursive
-          token: ${{ secrets[format('{0}_WORKFLOW_PAT', needs.setup.outputs.project-upper)] }}
+          token: ${{ secrets[needs.setup.outputs.workflow-token] }}
       - name: Configure AWS credentials for Cloud Custodian
         uses: aws-actions/configure-aws-credentials@v1-node16
         with:
-          role-to-assume: ${{ secrets[needs.setup.outputs.custodian-role-var] }}
+          role-to-assume: ${{ secrets[needs.setup.outputs.custodian-role] }}
           aws-region: eu-west-2
           role-session-name: CustodianRole
       - run: |
           pip install ruamel.yaml c7n c7n-mailer c7n-guardian --ignore-installed six
           cd accounts
-          ../custodian/scripts/deploy-custodian.sh ${{ needs.setup.outputs.project-upper }} ${{ github.event.inputs.environment }} ${{ steps.set-environment-names.outputs.email }} ${{ secrets[format('{0}_MANAGEMENT_ACCOUNT', needs.setup.outputs.project-upper)] }}
+          ../custodian/scripts/deploy-custodian.sh ${{ needs.setup.outputs.project-upper }} ${{ github.event.inputs.environment }} ${{ secrets[needs.setup.outputs.email] }} ${{ secrets[needs.setup.outputs.management-account] }}
       - uses: nationalarchives/tdr-github-actions/.github/actions/slack-send@main
         with:
           message: |
             Cloud Custodian deployed to ${{ github.event.inputs.environment }} AWS account
-          slack-url: ${{ secrets[format('{0}_SLACK_WEBHOOK', needs.setup.outputs.project-upper)] }}
+          slack-url: ${{ secrets[needs.setup.outputs.slack-webhook] }}
