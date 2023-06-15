@@ -25,6 +25,10 @@ jobs:
         with:
           project: ${{ github.event.inputs.project }}
           environment: ${{ github.event.inputs.environment }}
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo ${{ needs.setup.outputs.workflow-token-var }}
   apply:
     uses: nationalarchives/dr2-github-actions/.github/workflows/terraform_apply.yml@create-generic-apply-job
     needs: setup
