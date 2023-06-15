@@ -6,7 +6,7 @@ provider "aws" {
     content {
       role_arn     = local.assume_role
       session_name = "terraform"
-      external_id  = var.project == "tdr" ? module.global_parameters.external_ids.terraform_environments : null
+      external_id  = module.terraform_config.terraform_config["terraform_external_id"]
     }
   }
 }

@@ -1,6 +1,3 @@
-[submodule "terraform/tdr-configurations"]
-	path = terraform/tdr-configurations
-	url = https://github.com/nationalarchives/tdr-configurations.git
 [submodule "terraform/da-terraform-configurations"]
 	path = terraform/da-terraform-configurations
 	url = https://github.com/nationalarchives/da-terraform-configurations.git

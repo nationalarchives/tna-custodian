@@ -6,7 +6,7 @@ locals {
       "Environment" = local.environment,
       "Owner"       = upper(var.project),
       "Terraform"   = true,
-      "CostCentre"  = module.global_parameters.cost_centre
+      "CostCentre"  = module.terraform_config.terraform_config["cost_centre"]
     }
   )
 }

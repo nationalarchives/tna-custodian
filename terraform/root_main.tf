@@ -1,7 +1,3 @@
-module "global_parameters" {
-  source = "./tdr-configurations/terraform"
-}
-
 module "terraform_config" {
   source = "./da-terraform-configurations/"
   project = var.project
