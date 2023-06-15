@@ -44,16 +44,16 @@ jobs:
     needs: setup
     with:
       repo-name: tna-custodian
-      environment: ${{ github.event.inputs.environment }}
+      environment: "${{ github.event.inputs.environment }}"
       working-directory: terraform
-      project: ${{ github.event.inputs.project }}
+      project: "${{ github.event.inputs.project }}"
     secrets:
-      WORKFLOW_TOKEN: ${{ secrets.WORKFLOW_PAT }}
-      ACCOUNT_NUMBER: ${{ secrets[needs.setup.outputs.account-number-secret] }}
-      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-      TERRAFORM_ROLE: ${{ secrets[needs.setup.outputs.terraform-role-var] }}
-      STATE_BUCKET: ${{ secrets[needs.setup.outputs.state-bucket-var] }}
-      DYNAMO_TABLE: ${{ secrets[needs.setup.outputs.dynamo-table-var] }}
+      WORKFLOW_TOKEN: "${{ secrets.WORKFLOW_PAT }}"
+      ACCOUNT_NUMBER: "${{ secrets[needs.setup.outputs.account-number-secret] }}"
+      SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+      TERRAFORM_ROLE: "${{ secrets[needs.setup.outputs.terraform-role-var] }}"
+      STATE_BUCKET: "${{ secrets[needs.setup.outputs.state-bucket-var] }}"
+      DYNAMO_TABLE: "${{ secrets[needs.setup.outputs.dynamo-table-var] }}"
   custodian:
     environment: ${{ github.event.inputs.project }}-${{ github.event.inputs.environment }}
     runs-on: ubuntu-latest
