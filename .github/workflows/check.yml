@@ -10,6 +10,7 @@ jobs:
     uses: nationalarchives/tdr-github-actions/.github/workflows/terraform_check.yml@main
     with:
       working-directory: 'terraform'
+      terraform-version: "1.5.2"
     secrets:
       MANAGEMENT_ACCOUNT: ${{ secrets.MANAGEMENT_ACCOUNT }}
       WORKFLOW_PAT: ${{ secrets.WORKFLOW_PAT }}

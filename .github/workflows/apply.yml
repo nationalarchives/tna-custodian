@@ -17,6 +17,7 @@ jobs:
       repo-name: tna-custodian
       environment: ${{ github.event.inputs.environment }}
       working-directory: terraform
+      terraform-version: "1.5.2"
     secrets:
       MANAGEMENT_ACCOUNT: ${{ secrets.MANAGEMENT_ACCOUNT }}
       WORKFLOW_PAT: ${{ secrets.WORKFLOW_PAT }}
