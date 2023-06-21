@@ -10,5 +10,5 @@ jobs:
     with:
       working-directory: 'terraform'
     secrets:
-      MANAGEMENT_ACCOUNT: ${{ secrets.MANAGEMENT_ACCOUNT }}
-      WORKFLOW_PAT: ${{ secrets.WORKFLOW_PAT }}
+      MANAGEMENT_ACCOUNT: ${{ secrets.TDR_MANAGEMENT_ACCOUNT }}
+      WORKFLOW_PAT: ${{ secrets.TDR_WORKFLOW_PAT }}
