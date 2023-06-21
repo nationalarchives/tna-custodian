@@ -11,6 +11,6 @@ jobs:
       working-directory: terraform
     secrets:
       MANAGEMENT_ACCOUNT: ${{ secrets.TDR_MANAGEMENT_ACCOUNT }}
-      WORKFLOW_PAT: ${{ secrets.TDR_WORKFLOW_PAT }}
+      WORKFLOW_TOKEN: ${{ secrets.TDR_WORKFLOW_PAT }}
       STATE_BUCKET: ${{ secrets.TDR_MGMT_STATE_BUCKET }}
       DYNAMO_TABLE: ${{ secrets.TDR_MGMT_DYNAMO_TABLE }}
