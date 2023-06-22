@@ -1,15 +1,16 @@
 name: 'Terraform check'
 on:
-  push:
   pull_request:
 permissions:
   id-token: write
   contents: write
 jobs:
   check:
-    uses: nationalarchives/tdr-github-actions/.github/workflows/terraform_check.yml@main
+    uses: nationalarchives/dr2-github-actions/.github/workflows/terraform_check.yml@main
     with:
-      working-directory: 'terraform'
+      working-directory: terraform
     secrets:
-      MANAGEMENT_ACCOUNT: ${{ secrets.MANAGEMENT_ACCOUNT }}
-      WORKFLOW_PAT: ${{ secrets.WORKFLOW_PAT }}
+      MANAGEMENT_ACCOUNT: ${{ secrets.DR2_MANAGEMENT_ACCOUNT }}
+      WORKFLOW_TOKEN: ${{ secrets.DR2_WORKFLOW_PAT }}
+      STATE_BUCKET: ${{ secrets.DR2_MGMT_STATE_BUCKET }}
+      DYNAMO_TABLE: ${{ secrets.DR2_MGMT_DYNAMO_TABLE }}
