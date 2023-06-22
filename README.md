@@ -134,10 +134,9 @@ Note: Testing may highlight issues with IAM roles/policies for the Cloud Custodi
 5. Depending on the actions defined in the new policy, after the policy lambda has been triggered, slack and email messages should be sent, and any remediation actions performed on any AWS resources identified by the Cloud Custodian policy. 
    Note: there may be a delay in messages being sent. This is due to the lambda send the messages running periodically.
 
-### Deploy Cloud Custodian in other TDR environments
-
-* Deploy using Jenkins
-* Use TDR Custodian Deploy pipeline for deployment
+### GitHub actions Deploy Cloud
+The deploy workflow runs terraform using the `terraform_apply` workflow in `dr2-github-actions` 
+This repository is team specific but that workflow has been changed to be generic. We may eventually move this to a department level repository.
 
 ## Add a new team to the repository
 * Add your team name to the input variable in [the apply workflow](./.github/workflows/apply.yml)
