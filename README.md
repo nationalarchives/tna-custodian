@@ -68,9 +68,9 @@ Deployment of the AWS resources should be done from a development machine.
    ```
    tdr_account_number = "[TDR management account number]"
    ```
-2. Clone the tdr-configurations project into the ./terraform directory:
+2. Clone the da-terraform-configurations project into the ./terraform directory:
    ```
-   [terraform] $ git clone git@github.com:nationalarchives/tdr-configurations.git
+   [terraform] $ git clone git@github.com:nationalarchives/da-terraform-configurations.git
    ```
 3. Add the necessary Terraform scripts to create the required AWS resources for the new Cloud Custodian policy in the mgmt Terraform workspace:
    ```
