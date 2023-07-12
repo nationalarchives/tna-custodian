@@ -69,11 +69,11 @@ Deployment of the AWS resources should be done from a development machine.
    [location FOR project]: git clone https://github.com/nationalarchives/tna-custodian --recurse-submodules
    ```
 
-1. Create a file terraform.tfvars in the ./terraform directory of the project, with the project management account number defined:
+2. Create a file terraform.tfvars in the ./terraform directory of the project, with the project management account number defined:
    ```
    tdr_account_number = "[project management account number]"
    ```
-2. Initialise the Terraform
+3. Initialise the Terraform
 
 The initialisation command requires two parameters to be set
 * Terraform state bucket for the project
@@ -83,11 +83,11 @@ The initialisation command requires two parameters to be set
   [location of project]: terraform init -backend-config="bucket={name of the state bucket}" --backend-config="dynamodb_table={state lock table}"
   ```
 
-3. Add the necessary Terraform scripts to create the required AWS resources for the new Cloud Custodian policy in the mgmt Terraform workspace:
+4. Add the necessary Terraform scripts to create the required AWS resources for the new Cloud Custodian policy in the mgmt Terraform workspace:
    ```
    terraform workspace new mgmt     
    ```
-4. Deploy the AWS resources:
+5. Deploy the AWS resources:
    ```
    terraform plan
    terraform apply
