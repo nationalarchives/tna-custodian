@@ -3,11 +3,11 @@ variable "project" {
 }
 
 variable "account_number" {
-  description = "The AWS account number where the TDR environment is hosted"
+  description = "The AWS account number where the project environment is hosted"
   type        = string
 }
 
 variable "assume_role" {
-  description = "set to true to assume a TDR terraform role"
+  description = "set to true to assume a project terraform role"
   default     = true
 }

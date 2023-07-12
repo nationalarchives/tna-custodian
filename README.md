@@ -57,26 +57,37 @@ source custodian/bin/activate
 (custodian) pip install ruamel.yaml
 ``` 
 
-## Add New TDR Cloud Custodian Policy
+## Add New Project Cloud Custodian Policy
 
-### Adding Necessary AWS Resources for Policy in TDR management account
+### Adding Necessary AWS Resources for Policy in the project management account
 Set up necessary IAM role and IAM policies and any other AWS resources needed for the new Custodian policy using Terraform.
 
 Deployment of the AWS resources should be done from a development machine.
 
-1. Create a file terraform.tfvars in the ./terraform directory of the project, with the TDR management account number defined:
+1. Create a file terraform.tfvars in the ./terraform directory of the project, with the project management account number defined:
    ```
-   tdr_account_number = "[TDR management account number]"
+   tdr_account_number = "[project management account number]"
    ```
 2. Clone the da-terraform-configurations project into the ./terraform directory:
    ```
    [terraform] $ git clone git@github.com:nationalarchives/da-terraform-configurations.git
    ```
-3. Add the necessary Terraform scripts to create the required AWS resources for the new Cloud Custodian policy in the mgmt Terraform workspace:
+   
+3. Initialise the Terraform
+
+The initialisation command requires two parameters to be set
+* Terraform state bucket for the project
+* Terraform state lock DynamoDB table for the project
+
+  ```
+  [location of project]: terraform init -backend-config="bucket={name of the state bucket}" --backend-config="dynamodb_table={state lock table}"
+  ```
+
+4. Add the necessary Terraform scripts to create the required AWS resources for the new Cloud Custodian policy in the mgmt Terraform workspace:
    ```
    terraform workspace new mgmt     
    ```
-4. Deploy the AWS resources:
+5. Deploy the AWS resources:
    ```
    terraform plan
    terraform apply
