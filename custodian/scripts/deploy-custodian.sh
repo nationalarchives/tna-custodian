@@ -33,6 +33,10 @@ echo "Deploying IAM MFA-Warn policy"
 python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/iam/mfa-warn.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION" --sqs_account "$SQS_ACCOUNT"
 custodian run -s logs --region="$CUSTODIAN_REGION_1" deploy.yml
 
+echo "Deploying IAM KMS Admin allow policy"
+python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/iam/kms-admin-role-deny.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION" --sqs_account "$SQS_ACCOUNT"
+custodian run -s logs --region="$CUSTODIAN_REGION_1" deploy.yml
+
 echo "Deploying EC2 Security Group ingress policy to $CUSTODIAN_REGION_1"
 python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/ec2/sg-ingress.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION" --sqs_account "$SQS_ACCOUNT"
 custodian run -s logs --region="$CUSTODIAN_REGION_1" deploy.yml

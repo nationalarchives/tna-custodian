@@ -1,0 +1,41 @@
+policies:
+  - name: kms-admin-role-deny
+    resource: iam-role
+    mode:
+      type: periodic
+      schedule: "rate(1 hour)"
+      role: arn:aws:iam::{account_id}:role/CustodianIamMfaWarn
+      tags: { tags }
+    description: |
+      Notifies if the KMS admin role has an allow effect
+    filters:
+      - type: value
+        key: "AssumeRolePolicyDocument.Statement[].Effect"
+        op: contains
+        value: "Allow"
+      - type: value
+        key: "tag:Type"
+        op: equal
+        value: kms-admin-role
+    actions:
+      - type: notify
+        template: default.html
+        priority_header: '1'
+        subject: "{{ account }} account - KMS admin role has allow permissions in the trust policy"
+        violation_desc: "KMS admin role has allow permissions"
+        action_desc: "Remove allow permissions from the KMS admin role trust policy"
+        to:
+          - {to_address}
+        transport:
+          type: sqs
+          queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer
+      - type: notify
+        slack_template: slack_default
+        violation_desc: 'KMS admin role has allow permissions'
+        action_desc: 'Remove allow permissions from the KMS admin role trust policy'
+        to:
+          - slack://webhook/#mfa-warn
+          - {slack_webhook}
+        transport:
+          type: sqs
+          queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer
