@@ -80,7 +80,7 @@ The initialisation command requires two parameters to be set
 * Terraform state lock DynamoDB table for the project
 
   ```
-  [location of project]: terraform init -backend-config="bucket={name of the state bucket}" --backend-config="dynamodb_table={state lock table}"
+  [location of project]: terraform init -backend-config="bucket=${{ secrets.STATE_BUCKET }}" --backend-config="dynamodb_table=${{ secrets.DYNAMO_TABLE }}"
   ```
 
 4. Add the necessary Terraform scripts to create the required AWS resources for the new Cloud Custodian policy in the mgmt Terraform workspace:
