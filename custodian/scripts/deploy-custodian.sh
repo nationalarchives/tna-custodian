@@ -123,4 +123,4 @@ custodian run -s logs --region="$CUSTODIAN_REGION_1" deploy.yml
 
 echo "Deploying Reference Counter table KMS key check"
 python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/dynamodb/reference-counter-table-kms-key-check.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION" --sqs_account "$SQS_ACCOUNT"
-custodian run --dryrun -s logs --region="$CUSTODIAN_REGION_1" deploy.yml
+custodian run -s logs --region="$CUSTODIAN_REGION_1" deploy.yml

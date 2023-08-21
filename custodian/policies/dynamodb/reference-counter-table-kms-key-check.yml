@@ -2,23 +2,38 @@ policies:
   - name: reference-counter-table-kms-key-check
     mode:
       type: periodic
-      schedule: "rate(1 hour)"
+      schedule: "rate(30 minutes)"
       role: arn:aws:iam::{account_id}:role/CustodianCheckReferenceCounterDynamoDbTable
     resource: aws.dynamodb-table
+    filters:
+      - type: value
+        key: "TableName"
+        value: "da-reference-counter"
+      - not:
+        - type: kms-key
+          key: "c7n:AliasName"
+          value: "alias/da-reference-counter-key-{{ environment }}"
     description: |
       Checks reference counter dynamodb table is encrypted at rest with correct KMS key
-    filters:
-      - type: kms-key
-        key: "c7n:AliasName"
-        value: tdr-s3-external-kms-intg
     actions:
+      - type: notify
+        template: default.html
+        priority_header: '1'
+        subject: "{{ account }} account - Reference counter table not encrypted"
+        violation_desc: "Reference counter table is not encrypted"
+        action_desc: "Implement KMS encryption"
+        to:
+          - { to_address }
+        transport:
+          type: sqs
+          queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer
       - type: notify
         slack_template: slack_default
         violation_desc: "Reference counter table is not encrypted"
         action_desc: "Implement KMS encryption"
         to:
-          - slack://webhook/#s3-delete-marked
+          - slack://webhook/#test
           - { slack_webhook }
         transport:
           type: sqs
-          queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer
+          queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-
