@@ -3,28 +3,29 @@
 ## ALERTS AND REMEDIATIONS
 * This implementation of Cloud Custodian includes the following alerts and automated remediations:
 
-| AWS SERVICE | RULE NAME                     | CONDITION                                                   | REMEDIATION                 |
-| ----------- |-------------------------------|-------------------------------------------------------------|-----------------------------|
-| CloudTrail  | Detect-root-login             | Root user logs in to AWS Console                            | None                        | 
-| EC2         | SG-ingress                    | Security group with inbound from any, except HTTP and HTTPS | Remove security group rule  | 
-| EC2         | Mark-unencrypted              | EC2 virtual machine not encrypted                           | Mark for deletion in 3 days | 
-| EC2         | Unmark-encrypted              | Previously marked virtual machine now encrypted             | Remove mark                 | 
-| EC2         | Delete-marked                 | Marked virtual machine date condition met                   | Terminate instance          | 
-| GuardDuty   | Notify                        | Guard Duty finding with medium or high priority             | None                        | 
-| IAM         | Access-key-warn               | Access keys older than 80 days                              | None                        |
-| IAM         | Access-key-disable            | Access keys older than 85 days                              | Disable keys                |
-| IAM         | Access-key-delete             | Access keys older than 90 days                              | Delete keys                 |
-| IAM         | MFA-warn                      | Console user without MFA                                    | None                        |
-| S3          | Mark-unencrypted              | S3 bucket not encrypted                                     | Mark for deletion in 3 days | 
-| S3          | Unmark-encrypted              | Previously marked S3 bucket now encrypted                   | Remove mark                 | 
-| S3          | Delete-marked-unencrypted     | Marked S3 bucket date condition met                         | Terminate instance          |
-| S3          | Mark-missing-ssl              | S3 bucket missing SSL only policy                           | Add SSL only policy         | 
-| S3          | Remove-public-acls            | Public ACLs at S3 bucket level                              | Remove public ACLs          | 
-| S3          | Mark-public-policy            | S3 bucket with public policy                                | Mark for deletion in 3 days | 
-| S3          | Unmark-public-policy          | Previously marked S3 bucket no longer public                | Remove mark                 | 
-| S3          | Delete-marked-public-policy   | Marked S3 bucket date condition met                         | Terminate instance          | 
-| S3          | Check-for-public-access-block | S3 bucket without public access block                       | Set public access block     |
-| VPC         | Notify-no-flow-logs           | VPC flow logs not configured and enabled                    | None                        | 
+| AWS SERVICE | RULE NAME                             | CONDITION                                                                                                                                                  | REMEDIATION                 |
+| ----------- |---------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------|
+| CloudTrail  | Detect-root-login                     | Root user logs in to AWS Console                                                                                                                           | None                        |
+| DynamoDb    | reference-counter-table-kms-key-check | Checks if reference counter table encrypted with specific KMS key.<br/> Note this applies to specific table only as this is needed for business continuity | None                        |
+| EC2         | SG-ingress                            | Security group with inbound from any, except HTTP and HTTPS                                                                                                | Remove security group rule  | 
+| EC2         | Mark-unencrypted                      | EC2 virtual machine not encrypted                                                                                                                          | Mark for deletion in 3 days | 
+| EC2         | Unmark-encrypted                      | Previously marked virtual machine now encrypted                                                                                                            | Remove mark                 | 
+| EC2         | Delete-marked                         | Marked virtual machine date condition met                                                                                                                  | Terminate instance          | 
+| GuardDuty   | Notify                                | Guard Duty finding with medium or high priority                                                                                                            | None                        | 
+| IAM         | Access-key-warn                       | Access keys older than 80 days                                                                                                                             | None                        |
+| IAM         | Access-key-disable                    | Access keys older than 85 days                                                                                                                             | Disable keys                |
+| IAM         | Access-key-delete                     | Access keys older than 90 days                                                                                                                             | Delete keys                 |
+| IAM         | MFA-warn                              | Console user without MFA                                                                                                                                   | None                        |
+| S3          | Mark-unencrypted                      | S3 bucket not encrypted                                                                                                                                    | Mark for deletion in 3 days | 
+| S3          | Unmark-encrypted                      | Previously marked S3 bucket now encrypted                                                                                                                  | Remove mark                 | 
+| S3          | Delete-marked-unencrypted             | Marked S3 bucket date condition met                                                                                                                        | Terminate instance          |
+| S3          | Mark-missing-ssl                      | S3 bucket missing SSL only policy                                                                                                                          | Add SSL only policy         | 
+| S3          | Remove-public-acls                    | Public ACLs at S3 bucket level                                                                                                                             | Remove public ACLs          | 
+| S3          | Mark-public-policy                    | S3 bucket with public policy                                                                                                                               | Mark for deletion in 3 days | 
+| S3          | Unmark-public-policy                  | Previously marked S3 bucket no longer public                                                                                                               | Remove mark                 | 
+| S3          | Delete-marked-public-policy           | Marked S3 bucket date condition met                                                                                                                        | Terminate instance          | 
+| S3          | Check-for-public-access-block         | S3 bucket without public access block                                                                                                                      | Set public access block     |
+| VPC         | Notify-no-flow-logs                   | VPC flow logs not configured and enabled                                                                                                                   | None                        | 
 
 ## USAGE
 
@@ -80,7 +81,7 @@ The initialisation command requires two parameters to be set
 * Terraform state lock DynamoDB table for the project
 
   ```
-  [location of project]: terraform init -backend-config="bucket=${{ secrets.STATE_BUCKET }}" --backend-config="dynamodb_table=${{ secrets.DYNAMO_TABLE }}"
+  [location of project]: terraform init -backend-config="bucket={name of the state bucket}" --backend-config="dynamodb_table={state lock table}"
   ```
 
 4. Add the necessary Terraform scripts to create the required AWS resources for the new Cloud Custodian policy in the mgmt Terraform workspace:
