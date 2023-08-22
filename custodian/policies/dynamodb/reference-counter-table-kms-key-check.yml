@@ -12,7 +12,8 @@ policies:
       - not:
         - type: kms-key
           key: "c7n:AliasName"
-          value: "alias/da-reference-counter-key-{{ environment }}"
+          op: regex
+          value: alias/da-reference-counter-key-*
     description: |
       Checks reference counter dynamodb table is encrypted at rest with correct KMS key
     actions:
@@ -36,4 +37,4 @@ policies:
           - { slack_webhook }
         transport:
           type: sqs
-          queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-
+          queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer
