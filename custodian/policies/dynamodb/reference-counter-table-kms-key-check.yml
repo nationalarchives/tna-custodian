@@ -33,7 +33,7 @@ policies:
         violation_desc: "Reference counter table is not encrypted"
         action_desc: "Implement KMS encryption"
         to:
-          - slack://webhook/#test
+          - slack://webhook/#reference-counter-table-kms-check
           - { slack_webhook }
         transport:
           type: sqs
