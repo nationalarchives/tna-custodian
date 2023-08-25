@@ -10,6 +10,7 @@ HOSTED_ZONE=$(aws route53 list-hosted-zones --max-items 1 | jq '.HostedZones[0].
 CUSTODIAN_REGION_1="eu-west-2"
 CUSTODIAN_REGION_2="eu-west-1"
 SES_REGION="eu-west-2"
+REFERENCE_GENERATOR_HOSTING_PROJECT="TDR"
 
 echo "Configuring mailer"
 python ../custodian/scripts/build-mailer-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --from_address custodian@"$HOSTED_ZONE" --owner "$OWNER" --region "$SES_REGION"
@@ -117,10 +118,15 @@ echo "Deploying S3 check public block"
 python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/s3/s3-check-public-block-policy.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION" --sqs_account "$SQS_ACCOUNT"
 custodian run -s logs --region="$CUSTODIAN_REGION_1" deploy.yml
 
-echo "Deploying ECR check scan on push block"
-python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/ecr/ecr-scan-on-push.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION" --sqs_account "$SQS_ACCOUNT"
-custodian run -s logs --region="$CUSTODIAN_REGION_1" deploy.yml
+# Policies specific to the reference generator service
+# Only deploy to the hosting project
+if [ $OWNER = $REFERENCE_GENERATOR_HOSTING_PROJECT ]
+then
+  echo "Deploying Reference Counter table PITR check"
+  python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/dynamodb/reference-counter/reference-counter-table-pitr-check.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION" --sqs_account "$SQS_ACCOUNT"
+  custodian run -s logs --region="$CUSTODIAN_REGION_1" deploy.yml
 
-echo "Deploying Reference Counter table KMS key check"
-python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/dynamodb/reference-counter-table-kms-key-check.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION" --sqs_account "$SQS_ACCOUNT"
-custodian run -s logs --region="$CUSTODIAN_REGION_1" deploy.yml
+  echo "Deploying ECR check scan on push block"
+  python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/ecr/ecr-scan-on-push.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION" --sqs_account "$SQS_ACCOUNT"
+  custodian run -s logs --region="$CUSTODIAN_REGION_1" deploy.yml
+fi
