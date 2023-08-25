@@ -33,7 +33,7 @@ policies:
         violation_desc: "Reference counter table does not have point in time recovery enabled"
         action_desc: "Implement point in time recovery"
         to:
-          - slack://webhook/#reference-counter-table-kms-check
+          - slack://webhook/#reference-counter-table-pitr-check
           - { slack_webhook }
         transport:
           type: sqs

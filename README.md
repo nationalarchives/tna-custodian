@@ -27,7 +27,7 @@
 | S3          | Check-for-public-access-block          | S3 bucket without public access block                                                                     | Set public access block     |
 | VPC         | Notify-no-flow-logs                    | VPC flow logs not configured and enabled                                                                  | None                        | 
 
-[reference-counter-readme]: https://github.com/nationalarchives/tna-custodian/tree/master/custodian/policies/dynamodb/refenence-counter/README.md
+[reference-counter-readme]: https://github.com/nationalarchives/tna-custodian/tree/master/custodian/policies/dynamodb/reference-counter/README.md
 
 ## USAGE
 
