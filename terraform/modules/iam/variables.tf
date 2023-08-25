@@ -115,3 +115,8 @@ variable "ecr_set_scan_on_push" {
   description = "The IAM role for the ECR set scan on push policy"
   default     = true
 }
+
+variable "reference_counter_check" {
+  description = "The IAM role for checking DynamoDb reference counter table"
+  default     = true
+}
