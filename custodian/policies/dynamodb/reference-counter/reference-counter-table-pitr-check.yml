@@ -1,0 +1,40 @@
+policies:
+  - name: reference-counter-table-pitr-check
+    mode:
+      type: periodic
+      schedule: "rate(30 minutes)"
+      role: arn:aws:iam::{account_id}:role/CustodianCheckReferenceCounterDynamoDbTable
+    resource: aws.dynamodb-table
+    filters:
+      - type: value
+        key: "TableName"
+        value: "da-reference-counter"
+      - and:
+        - type: continuous-backup
+          key: PointInTimeRecoveryDescription.PointInTimeRecoveryStatus
+          op: not-equal
+          value: ENABLED
+    description: |
+      Checks reference counter dynamodb table has point in time recovery (PITR) enabled
+    actions:
+      - type: notify
+        template: default.html
+        priority_header: '1'
+        subject: "{{ account }} account - Reference counter table PITR not enabled"
+        violation_desc: "Reference counter table does not have point in time recovery enabled"
+        action_desc: "Implement point in time recovery"
+        to:
+          - { to_address }
+        transport:
+          type: sqs
+          queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer
+      - type: notify
+        slack_template: slack_default
+        violation_desc: "Reference counter table does not have point in time recovery enabled"
+        action_desc: "Implement point in time recovery"
+        to:
+          - slack://webhook/#reference-counter-table-pitr-check
+          - { slack_webhook }
+        transport:
+          type: sqs
+          queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer
