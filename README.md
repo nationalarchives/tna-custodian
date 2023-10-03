@@ -24,7 +24,6 @@
 | S3          | Remove-public-acls                     | Public ACLs at S3 bucket level                                                                            | Remove public ACLs          | 
 | S3          | Mark-public-policy                     | S3 bucket with public policy (s3:* or s3:GetObject actions allowed by wildcard principal)                 | Mark for deletion in 3 days | 
 | S3          | Unmark-public-policy                   | Previously marked S3 bucket no longer public (s3:* or s3:GetObject actions allowed by wildcard principal) | Remove mark                 | 
-| S3          | Delete-marked-public-policy            | Marked S3 bucket date condition met                                                                       | Empty and delete bucket     | 
 | S3          | Check-for-public-access-block          | S3 bucket without public access block                                                                     | Set public access block     |
 | VPC         | Notify-no-flow-logs                    | VPC flow logs not configured and enabled                                                                  | None                        | 
 
