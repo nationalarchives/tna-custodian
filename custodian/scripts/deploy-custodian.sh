@@ -9,6 +9,7 @@ SLACK_WEBHOOK=$(aws ssm get-parameter --with-decryption --name /$ENVIRONMENT/rel
 HOSTED_ZONE=$(aws route53 list-hosted-zones --max-items 1 | jq '.HostedZones[0].Name' | tr -d '"' | sed 's/.$//')
 CUSTODIAN_REGION_1="eu-west-2"
 CUSTODIAN_REGION_2="eu-west-1"
+ROOT_LOGIN_REGION="us-east-1"
 SES_REGION="eu-west-2"
 REFERENCE_GENERATOR_HOSTING_PROJECT="TDR"
 
@@ -44,7 +45,7 @@ custodian run -s logs --region="$CUSTODIAN_REGION_2" deploy.yml
 
 echo "Deploying CloudTrail detect root user policy"
 python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/cloudtrail/detect-root-logins.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION" --sqs_account "$SQS_ACCOUNT"
-custodian run -s logs --region="$CUSTODIAN_REGION_1" deploy.yml
+custodian run -s logs --region="$ROOT_LOGIN_REGION" deploy.yml
 
 echo "Deploying mark unencrypted EC2 instance policy to $CUSTODIAN_REGION_1"
 python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/ec2/ec2-mark-unencrypted.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION" --sqs_account "$SQS_ACCOUNT"
