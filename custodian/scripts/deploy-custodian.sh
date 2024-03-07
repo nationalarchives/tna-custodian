@@ -12,6 +12,7 @@ CUSTODIAN_REGION_2="eu-west-1"
 ROOT_LOGIN_REGION="us-east-1"
 SES_REGION="eu-west-2"
 REFERENCE_GENERATOR_HOSTING_PROJECT="TDR"
+ALERT_ON_ADMIN_ROLE_PROJECTS=("DR2")
 
 echo "Configuring mailer"
 python ../custodian/scripts/build-mailer-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --from_address custodian@"$HOSTED_ZONE" --owner "$OWNER" --region "$SES_REGION"
@@ -47,12 +48,15 @@ echo "Deploying CloudTrail detect root user policy"
 python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/cloudtrail/detect-root-logins.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION" --sqs_account "$SQS_ACCOUNT"
 custodian run -s logs --region="$ROOT_LOGIN_REGION" deploy.yml
 
-python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/cloudtrail/detect_assume_admin_role.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION" --sqs_account "$SQS_ACCOUNT"
-readarray -t regions < <(aws account list-regions | jq -r '.Regions[] | select( .RegionOptStatus == "ENABLED_BY_DEFAULT" ) | .RegionName')
-for region in "${regions[@]}"; do
-  echo "Deploying IAM_Admin_Role assume role to region $region"
-  custodian run -s logs --region="$region" deploy.yml
-done
+if [[ ${ALERT_ON_ADMIN_ROLE_PROJECTS[@]} =~ $OWNER ]]
+then
+  python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/cloudtrail/detect_assume_admin_role.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION" --sqs_account "$SQS_ACCOUNT"
+  readarray -t regions < <(aws account list-regions | jq -r '.Regions[] | select( .RegionOptStatus == "ENABLED_BY_DEFAULT" ) | .RegionName')
+  for region in "${regions[@]}"; do
+    echo "Deploying IAM_Admin_Role assume role to region $region"
+    custodian run -s logs --region="$region" deploy.yml
+  done
+fi
 
 echo "Deploying mark unencrypted EC2 instance policy to $CUSTODIAN_REGION_1"
 python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/ec2/ec2-mark-unencrypted.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION" --sqs_account "$SQS_ACCOUNT"
