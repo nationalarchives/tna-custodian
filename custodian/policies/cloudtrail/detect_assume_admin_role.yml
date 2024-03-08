@@ -1,0 +1,40 @@
+policies:
+  - name: iam-admin-role-assumption
+    resource: account
+    description: |
+      Alert when the IAM_Admin_Role role is assumed.
+    mode:
+      type: cloudtrail
+      events:
+        - source: sts.amazonaws.com
+          event: AssumeRole
+          ids: requestParameters.roleArn
+      role: arn:aws:iam::{account_id}:role/CustodianCloudtrailDetectRootLogin
+    filters:
+      - type: event
+        key: detail.requestParameters.roleArn
+        op: in
+        value_type: swap
+        value: "arn:aws:iam::{account_id}:role/IAM_Admin_Role"
+    actions:
+      - type: notify
+        template: default.html
+        priority_header: 1
+        subject: "{{ account }} account - IAM_Admin_Role has been assumed"
+        violation_desc: "A user has assumed the IAM_Admin_Role"
+        action_desc: "Investigate IAM_Admin_Role assumption"
+        to:
+          - { to_address }
+        transport:
+          type: sqs
+          queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer
+      - type: notify
+        slack_template: slack_default
+        violation_desc: 'IAM_Admin_Role assume role detected'
+        action_desc: 'Investigate IAM_Admin_Role assumption and revoke credentials if needed'
+        to:
+          - slack://webhook/#detect-assume-admin-role
+          - { slack_webhook }
+        transport:
+          type: sqs
+          queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer

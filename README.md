@@ -6,6 +6,7 @@
 | AWS SERVICE | RULE NAME                              | CONDITION                                                                                                 | REMEDIATION                 |
 | ----------- |----------------------------------------|-----------------------------------------------------------------------------------------------------------|-----------------------------|
 | CloudTrail  | Detect-root-login                      | Root user logs in to AWS Console                                                                          | None                        |
+| CloudTrail  | iam-admin-role-assumption              | The IAM_Admin_Role is assumed in any enabled region                                                       | None                        |
 | DynamoDb    | Reference Counter Table specific rules | Set of checks specific to the reference counter table. See [README][reference-counter-readme] for details | Not Applicable              |
 | EC2         | SG-ingress                             | Security group with inbound from any, except HTTP and HTTPS (ports 80 and 443)                            | Remove security group rule  | 
 | EC2         | Mark-unencrypted                       | EC2 virtual machine not encrypted                                                                         | Mark for deletion in 3 days | 
