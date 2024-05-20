@@ -120,3 +120,8 @@ variable "reference_counter_check" {
   description = "The IAM role for checking DynamoDb reference counter table"
   default     = true
 }
+
+variable "inspector" {
+  description = "The role for retrieving AWS inspector findings"
+  default     = true
+}

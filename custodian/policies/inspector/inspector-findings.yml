@@ -1,0 +1,18 @@
+policies:
+  - name: inspector-findings-policy
+    resource: aws.inspector2-finding
+    mode:
+        type: periodic
+        schedule: "rate(1 day)"
+        role: arn:aws:iam::{account_id}:role/CustodianInspectorFindings
+        tags: {tags}
+    actions:
+      - type: notify
+        slack_template: slack_inspector
+        violation_desc: 'Account {account_id} Inspector has found vulnerabilities'
+        to:
+          - slack://webhook/#mfa-warn
+          - {slack_webhook}
+        transport:
+          type: sqs
+          queue: https://sqs.{region}.amazonaws.com/{account_id}/custodian-mailer
