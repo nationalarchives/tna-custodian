@@ -146,3 +146,7 @@ then
   python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/dynamodb/reference-counter/reference-counter-table-pitr-check.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION" --sqs_account "$SQS_ACCOUNT"
   custodian run -s logs --region="$CUSTODIAN_REGION_1" deploy.yml
 fi
+
+echo "Deploying Inspector2 findings block"
+python ../custodian/scripts/build-policy-yml.py --cost_centre "$COST_CENTRE" --environment "$ENVIRONMENT" --filepath "../custodian/policies/inspector/inspector-findings.yml" --owner "$OWNER" --slack_webhook "$SLACK_WEBHOOK" --to_address "$TO_ADDRESS" --sqs_region "$SES_REGION" --sqs_account "$SQS_ACCOUNT"
+custodian run -s logs --region="$CUSTODIAN_REGION_1" deploy.yml

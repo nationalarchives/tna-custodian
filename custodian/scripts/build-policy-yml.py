@@ -22,10 +22,18 @@ class policy:
             code = yaml.load(path)
             yaml.indent(mapping=2, sequence=4, offset=2)
             code['policies'][0]['mode']['tags'] = dict(CostCentre=cost_centre, Environment=environment, Name=name, Owner=owner)
-            code['policies'][0]['actions'][0]['to'][0] = to_address
-            code['policies'][0]['actions'][1]['to'][1] = slack_webhook
-            code['policies'][0]['actions'][0]['transport']['queue'] = 'https://sqs.' + sqs_region + '.amazonaws.com/' + sqs_account + '/custodian-mailer'
-            code['policies'][0]['actions'][1]['transport']['queue'] = 'https://sqs.' + sqs_region + '.amazonaws.com/' + sqs_account + '/custodian-mailer'
+            actions = code['policies'][0]['actions']
+            queue_url = f'https://sqs.{sqs_region}.amazonaws.com/{sqs_account}/custodian-mailer'
+            for action in actions:
+                action['transport']['queue'] = queue_url
+            email_and_slack_action = len(actions) == 2
+            if email_and_slack_action:
+                actions[0]['to'][0] = to_address
+                actions[1]['to'][1] = slack_webhook
+            else:
+                actions[0]['to'][1] = slack_webhook
+
+
             yaml.dump(code)
 
 if __name__ == "__main__":
