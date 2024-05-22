@@ -122,6 +122,6 @@ variable "reference_counter_check" {
 }
 
 variable "inspector" {
-  description = "The role for retrieving AWS inspector findings"
+  description = "Whether or not to create a role for retrieving AWS inspector findings"
   default     = true
 }

@@ -23,10 +23,11 @@ class policy:
             yaml.indent(mapping=2, sequence=4, offset=2)
             code['policies'][0]['mode']['tags'] = dict(CostCentre=cost_centre, Environment=environment, Name=name, Owner=owner)
             actions = code['policies'][0]['actions']
-            queue_url = 'https://sqs.' + sqs_region + '.amazonaws.com/' + sqs_account + '/custodian-mailer'
+            queue_url = f'https://sqs.{sqs_region}.amazonaws.com/{sqs_account}/custodian-mailer'
             for action in actions:
                 action['transport']['queue'] = queue_url
-            if len(actions) == 2:
+            email_and_slack_action = len(actions) == 2
+            if email_and_slack_action:
                 actions[0]['to'][0] = to_address
                 actions[1]['to'][1] = slack_webhook
             else:

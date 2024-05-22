@@ -9,7 +9,7 @@ policies:
     actions:
       - type: notify
         slack_template: slack_inspector
-        violation_desc: 'Account {account_id} Inspector has found vulnerabilities'
+        violation_desc: 'Amazon Inspector has found vulnerabilities in account {account_id}'
         to:
           - slack://webhook/#mfa-warn
           - {slack_webhook}
