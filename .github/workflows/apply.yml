@@ -58,9 +58,8 @@ jobs:
       - run: |
           pip install ruamel.yaml c7n c7n-mailer c7n-guardian --ignore-installed six
           cd accounts
-          echo ${{ needs.setup.outputs.management-account }}
-          echo ${{ secrets[needs.setup.outputs.management-account] }}
-          echo ${{ secrets.TDR_MANAGEMENT_ACCOUNT }}
+          echo ${{ needs.setup.outputs.email-address }}
+          echo ${{ secrets[needs.setup.outputs.email-address] }}
           echo ${{ needs.setup.outputs.project-upper }} ${{ github.event.inputs.environment }} ${{ secrets[needs.setup.outputs.email-address] }} ${{ secrets[needs.setup.outputs.management-account] }}
       - uses: nationalarchives/tdr-github-actions/.github/actions/slack-send@main
         with:
