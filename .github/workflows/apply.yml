@@ -38,6 +38,7 @@ jobs:
       TERRAFORM_ROLE: ${{ secrets[needs.setup.outputs.terraform-role] }}
       STATE_BUCKET: ${{ secrets[needs.setup.outputs.state-bucket] }}
       DYNAMO_TABLE: ${{ secrets[needs.setup.outputs.dynamo-table] }}
+      MANAGEMENT_ACCOUNT: ${{ secrets[needs.setup.outputs.management-account] }}
   custodian:
     environment: ${{ github.event.inputs.project }}-${{ github.event.inputs.environment }}
     runs-on: ubuntu-latest
