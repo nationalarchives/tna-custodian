@@ -60,8 +60,9 @@ jobs:
           cd accounts
           echo ${{ needs.setup.outputs.management-account }}
           echo ${{ secrets[needs.setup.outputs.management-account] }}
-          echo ${{ secrets.TDR_MANAGEMENT_ACCOUNT }} 
-          ../custodian/scripts/deploy-custodian.sh ${{ needs.setup.outputs.project-upper }} ${{ github.event.inputs.environment }} ${{ secrets[needs.setup.outputs.email] }} ${{ secrets[needs.setup.outputs.management-account] }}
+          echo ${{ secrets.TDR_MANAGEMENT_ACCOUNT }}
+#          ../custodian/scripts/deploy-custodian.sh ${{ needs.setup.outputs.project-upper }} ${{ github.event.inputs.environment }} ${{ secrets[needs.setup.outputs.email] }} ${{ secrets[needs.setup.outputs.management-account] }}
+          echo ${{ needs.setup.outputs.project-upper }} ${{ github.event.inputs.environment }} ${{ secrets[needs.setup.outputs.email] }} ${{ secrets[needs.setup.outputs.management-account] }}
       - uses: nationalarchives/tdr-github-actions/.github/actions/slack-send@main
         with:
           message: |
