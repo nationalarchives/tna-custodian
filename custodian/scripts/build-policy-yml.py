@@ -24,9 +24,10 @@ class policy:
             code['policies'][0]['mode']['tags'] = dict(CostCentre=cost_centre, Environment=environment, Name=name, Owner=owner)
             actions = code['policies'][0]['actions']
             queue_url = f'https://sqs.{sqs_region}.amazonaws.com/{sqs_account}/custodian-mailer'
-            for action in actions:
+
+            for action in [action for action in actions if 'transport' in action]:
                 action['transport']['queue'] = queue_url
-            email_and_slack_action = len(actions) == 2
+            email_and_slack_action = len([action for action in actions if 'to' in action]) == 2
             if email_and_slack_action:
                 actions[0]['to'][0] = to_address
                 actions[1]['to'][1] = slack_webhook
