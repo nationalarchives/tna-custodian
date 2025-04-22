@@ -56,6 +56,7 @@ jobs:
           aws-region: eu-west-2
           role-session-name: CustodianRole
       - run: |
+          pip install pyopenssl --upgrade
           pip install ruamel.yaml c7n c7n-mailer c7n-guardian --ignore-installed six
           cd accounts
           ../custodian/scripts/deploy-custodian.sh ${{ needs.setup.outputs.project-upper }} ${{ github.event.inputs.environment }} ${{ secrets[needs.setup.outputs.email] }} ${{ secrets[needs.setup.outputs.management-account] }}

@@ -10,7 +10,7 @@ jobs:
     with:
       working-directory: terraform
     secrets:
-      MANAGEMENT_ACCOUNT: ${{ secrets.DR2_MANAGEMENT_ACCOUNT }}
       WORKFLOW_TOKEN: ${{ secrets.DR2_WORKFLOW_PAT }}
       STATE_BUCKET: ${{ secrets.DR2_MGMT_STATE_BUCKET }}
       DYNAMO_TABLE: ${{ secrets.DR2_MGMT_DYNAMO_TABLE }}
+      TERRAFORM_ROLE: ${{ secrets.DR2_INTG_TERRAFORM_ROLE }}
