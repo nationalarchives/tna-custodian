@@ -50,7 +50,7 @@ jobs:
           submodules: recursive
           token: ${{ secrets[needs.setup.outputs.workflow-token] }}
       - name: Configure AWS credentials for Cloud Custodian
-        uses: aws-actions/configure-aws-credentials@ececac1a45f3b08a01d2dd070d28d111c5fe6722
+        uses: aws-actions/configure-aws-credentials@b47578312673ae6fa5b5096b330d9fbac3d116df
         with:
           role-to-assume: ${{ secrets[needs.setup.outputs.custodian-role] }}
           aws-region: eu-west-2
