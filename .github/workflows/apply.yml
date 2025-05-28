@@ -23,27 +23,11 @@ jobs:
     with:
       project: ${{ github.event.inputs.project }}
       environment: ${{ github.event.inputs.environment }}
-  apply:
-    uses: nationalarchives/dr2-github-actions/.github/workflows/terraform_apply.yml@main
-    needs: setup
-    with:
-      repo-name: tna-custodian
-      environment: ${{ github.event.inputs.environment }}
-      working-directory: terraform
-      project: ${{ github.event.inputs.project }}
-    secrets:
-      WORKFLOW_TOKEN: ${{ secrets[needs.setup.outputs.workflow-token] }}
-      ACCOUNT_NUMBER: ${{ secrets[needs.setup.outputs.account-number] }}
-      SLACK_WEBHOOK: ${{ secrets[needs.setup.outputs.slack-webhook] }}
-      TERRAFORM_ROLE: ${{ secrets[needs.setup.outputs.terraform-role] }}
-      STATE_BUCKET: ${{ secrets[needs.setup.outputs.state-bucket] }}
-      DYNAMO_TABLE: ${{ secrets[needs.setup.outputs.dynamo-table] }}
   custodian:
     environment: ${{ github.event.inputs.project }}-${{ github.event.inputs.environment }}
     runs-on: ubuntu-latest
     needs:
       - setup
-      - apply
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -59,7 +43,7 @@ jobs:
           pip install pyopenssl --upgrade
           pip install ruamel.yaml c7n c7n-mailer c7n-guardian --ignore-installed six
           cd accounts
-          ../custodian/scripts/deploy-custodian.sh ${{ needs.setup.outputs.project-upper }} ${{ github.event.inputs.environment }} ${{ secrets[needs.setup.outputs.email] }} ${{ secrets[needs.setup.outputs.management-account] }}
+          ../custodian/scripts/destroy-custodian.sh ${{ needs.setup.outputs.project-upper }} ${{ github.event.inputs.environment }} ${{ secrets[needs.setup.outputs.email] }} ${{ secrets[needs.setup.outputs.management-account] }}
       - uses: nationalarchives/tdr-github-actions/.github/actions/slack-send@main
         with:
           message: |
